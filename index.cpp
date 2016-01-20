@@ -2,12 +2,12 @@
 #include <regex>
 #include <boost/filesystem.hpp>
 #include <fstream>
-#include "selectica.h"
-
+#include "test.cpp"
+/*
 #ifdef _WIN32
 #pragma comment(lib, "Ws2_32.lib")
 #endif
-
+*/
 auto setupLogging = []()->void {
 
   if (boost::filesystem::create_directory("./log")){
@@ -29,30 +29,9 @@ auto setupLogging = []()->void {
 
 };
 
-namespace test {
-
-  int spec1(){
-
-    selectica::client client;
-
-    auto ctx = make_shared<Plustache::Context>();
-    
-    // login
-    auto tpl = client.login(ctx);
-
-    // getBOTypes
-    auto tpl1 = client.getBOTypes(ctx);
-
-    // logout
-    auto tpl2 = client.logout(ctx);
-
-    return 0;
-  }
-}
-
 int main(int argc, char *argv[]) {
 
   setupLogging();
 
-  test::spec1();
+  ::spec1();
 }

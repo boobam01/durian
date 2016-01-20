@@ -18,6 +18,9 @@
     <ClCompile Include="index.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="durian.h">
@@ -26,5 +29,11 @@
     <ClInclude Include="selectica.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="api_client.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="config.json" />
   </ItemGroup>
 </Project>

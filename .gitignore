@@ -37,4 +37,5 @@ config.json
 out.csv
 /scripts
 /samples
+test.cpp
 

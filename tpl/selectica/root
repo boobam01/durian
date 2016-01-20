@@ -1,6 +1,6 @@
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ecm="http://ws.selectica.com/ecm/">
   <soapenv:Header/>
   <soapenv:Body>
-  {{body}}
+  {{{body}}}
   </soapenv:Body>
 </soapenv:Envelope>

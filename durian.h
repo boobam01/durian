@@ -14,6 +14,7 @@ namespace durian {
   namespace XmlElement {
     class Root;
     class Body;
+    class Message;
   }
 
   template<typename xmlelement>
@@ -77,7 +78,7 @@ namespace durian {
   class generator<XmlElement::Root>{
   public:
     
-    std::shared_ptr<std::string> compile(shared_ptr<Plustache::Context> ctx, std::string& tplPath) {
+    std::shared_ptr<std::string> compile(shared_ptr<PlustacheTypes::ObjectType> ctx, std::string& tplPath) {
 
       generator_impl<XmlElement::Root> elemGen;
       elemGen.tpl = tplPath;
@@ -101,6 +102,30 @@ namespace durian {
       auto r = make_shared<string>(genTpl);
 
       return r;
+    }    
+
+  };
+
+  template<>
+  class generator < XmlElement::Message > {
+
+  public:
+    shared_ptr<string> render(shared_ptr<Plustache::Context> ctx, char* _path, char* _rootPath) {
+
+      string tplPath(_path);
+      durian::generator<durian::XmlElement::Body> gen;
+      auto body = gen.compile(ctx, tplPath);
+
+      // create envelope wrapper
+      auto rootCtx = make_shared<PlustacheTypes::ObjectType>();
+      (*rootCtx)["body"] = *body;
+      
+      string rootPath(_rootPath);
+      durian::generator<durian::XmlElement::Root> rootGen;
+      auto message = rootGen.compile(rootCtx, rootPath);
+
+      return message;
+
     }
 
   };

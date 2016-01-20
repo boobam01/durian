@@ -9,34 +9,25 @@ using namespace durian;
 namespace selectica {
   
   class client {
-
+    durian::generator<XmlElement::Message> generator;
   public:
     client(){}
     ~client(){}
     
-    shared_ptr<string> render(shared_ptr<Plustache::Context> ctx, char* _path) {
-
-      string tplPath(_path);
-      durian::generator<durian::XmlElement::Body> gen;
-      auto res = gen.compile(ctx, tplPath);
-      return res;
-
-    }
-
     shared_ptr<string> login(shared_ptr<Plustache::Context> ctx) {
-      return this->render(ctx, "tpl/selectica/Login");      
+      return this->generator.render(ctx, "tpl/selectica/Login", "tpl/selectica/root");
     }
 
     shared_ptr<string> logout(shared_ptr<Plustache::Context> ctx) {
-      return this->render(ctx, "tpl/selectica/Logout");
+      return this->generator.render(ctx, "tpl/selectica/Logout", "tpl/selectica/root");
     }
 
     shared_ptr<string> getBOTypes(shared_ptr<Plustache::Context> ctx) {
-      return this->render(ctx, "tpl/selectica/GetBOTypes");
+      return this->generator.render(ctx, "tpl/selectica/GetBOTypes", "tpl/selectica/root");
     }
 
     shared_ptr<string> getBOMetaData(shared_ptr<Plustache::Context> ctx) {
-      return this->render(ctx, "tpl/selectica/getBOMetaData");
+      return this->generator.render(ctx, "tpl/selectica/getBOMetaData", "tpl/selectica/root");
     }
     
   };
