@@ -1,0 +1,4 @@
+<ecm:GetBOMetaData>
+  <ecm:SessionToken>{{token}}</ecm:SessionToken>
+  <ecm:BOType>{{boType}}</ecm:BOType>
+</ecm:GetBOMetaData>

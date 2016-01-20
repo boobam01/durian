@@ -36,4 +36,5 @@ config.json
 /log
 out.csv
 /scripts
+/samples
 

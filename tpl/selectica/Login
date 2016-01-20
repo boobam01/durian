@@ -1,0 +1,4 @@
+<Login xmlns="http://ws.selectica.com/ecm/">
+  <username>{{user}}</username>
+  <password>{{password}}</password>
+</Login>

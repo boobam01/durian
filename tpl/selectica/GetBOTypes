@@ -1,0 +1,3 @@
+<GetBOTypes xmlns="http://ws.selectica.com/ecm/">
+  <SessionToken>{{token}}</SessionToken>
+</GetBOTypes>
