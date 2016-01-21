@@ -40,4 +40,5 @@ out.csv
 test.cpp
 
 *.xml
+*.js
 
