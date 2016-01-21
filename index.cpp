@@ -2,12 +2,8 @@
 #include <regex>
 #include <boost/filesystem.hpp>
 #include <fstream>
-#include "test.cpp"
-/*
-#ifdef _WIN32
-#pragma comment(lib, "Ws2_32.lib")
-#endif
-*/
+#include "selectica.h"
+
 auto setupLogging = []()->void {
 
   if (boost::filesystem::create_directory("./log")){
@@ -29,9 +25,10 @@ auto setupLogging = []()->void {
 
 };
 
-int main(int argc, char *argv[]) {
+int main2(int argc, char *argv[]) {
 
   setupLogging();
 
-  ::spec1();
+  return 0;
+
 }
