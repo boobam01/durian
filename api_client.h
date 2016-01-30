@@ -105,6 +105,7 @@ namespace api {
     parallelClient(int maxThreads) {
       THREAD_LIMITER = make_unique<::Semaphore>(maxThreads);      
     
+      //factory pattern
       this->methodPromise = [](vector<shared_ptr<IOIO>> futures)->vector<shared_ptr<IOIO>> {
         auto apiCall = [](shared_ptr<IOIO> o) {
           Semaphore_waiter_notifier w(*THREAD_LIMITER);
