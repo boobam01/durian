@@ -15,6 +15,7 @@
 
 #include "client_http.hpp"
 #include "client_https.hpp"
+#include "semaphore.hpp"
 
 #include<boost/thread/future.hpp>
 #include <iostream>
@@ -29,6 +30,19 @@ using namespace std;
 static const std::list<string> methods{ "GET", "POST", "PUT", "PATCH", "DEL" };
 
 namespace api {
+
+  struct IOIO {
+    IOIO(string& _method, string& _host, string& _path, string& _data, std::map<string, string>& _headers)
+      : method(_method), host(_host), path(_path), data(_data), headers(_headers) {}
+    IOIO(char* _method, char* _host, char* _path, char* _data, std::map<string, string>& _headers)
+      : method(_method), host(_host), path(_path), data(_data), headers(_headers) {}
+    string method;
+    string host;
+    string path;
+    string data;
+    string response;
+    std::map<string, string> headers;
+  };
 
   template<class T>
   class client {
@@ -74,6 +88,42 @@ namespace api {
 
   private:
     string host;
+  };
+
+  template<typename T>
+  class parallelClientImpl {
+  public:
+    parallelClientImpl(){}
+    ~parallelClientImpl(){}
+  };
+
+  // children must implement
+  template<typename T>
+  class parallelClient : public parallelClientImpl<T>{
+  
+  public:
+    parallelClient(int maxThreads) {
+      THREAD_LIMITER = make_unique<::Semaphore>(maxThreads);      
+    
+      this->methodPromise = [](vector<shared_ptr<IOIO>> futures)->vector<shared_ptr<IOIO>> {
+        auto apiCall = [](shared_ptr<IOIO> o) {
+          Semaphore_waiter_notifier w(*THREAD_LIMITER);
+
+          SimpleWeb::Client<T> client(o->host);
+          auto resp = client.request(o->method, o->path, o->data, o->headers);
+          stringstream ss;
+          ss << resp->content.rdbuf();
+          o->response = ss.str();
+        };
+
+        ::parallel_for_each(futures.begin(), futures.end(), apiCall);
+
+        return futures;
+      };
+    }
+    std::function<std::vector<shared_ptr<IOIO>>(std::vector<shared_ptr<IOIO>>)> methodPromise;
+  private:
+    unique_ptr<::Semaphore> THREAD_LIMITER;
   };
 
 }
