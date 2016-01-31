@@ -1,0 +1,33 @@
+{
+  "mongo": {
+    "dev": {
+      "host": "localhost",
+      "port": "27017",
+      "database": "studies4"
+    },
+    "staging": {
+      "host": "localhost",
+      "port": "27017",
+      "database": "studies4"
+    },
+    "prod": {
+    "host": "localhost",
+      "port": "37017",
+      "database": "studies4"
+    }
+  },
+  "api": {
+    "selectica": {
+      "mongo": {
+        "collection": {
+          "_DocumentReview": {
+            "selectors": "/selectors/selectica/_documentreview$selectors.json"
+          }
+        }
+      },
+      "templates": {
+        "path": "/tpl/selectica"
+      }
+    }
+  }
+}
