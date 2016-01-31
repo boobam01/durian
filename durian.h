@@ -6,6 +6,9 @@
 #include "plustache/template.hpp"
 #include "plustache/plustache_types.hpp"
 #include "plustache/context.hpp"
+#include "xml2json.hpp"
+#include "rapidjson/document.h"
+#include "rapidjson/prettywriter.h"
 
 using namespace std;
 
@@ -130,6 +133,24 @@ namespace durian {
 
   };
 
+}
+
+/*
+  utils
+*/
+static void dumpFile(const char* fname, const char* content) {
+  ofstream f;
+  f.open(fname);
+  f << content;
+  f.close();
+}
+
+static void dumpPrettyJson(const char* outfile, rapidjson::Document& d) {
+  // stringify prettyprint
+  rapidjson::StringBuffer sb;
+  rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
+  d.Accept(writer);
+  dumpFile(outfile, sb.GetString());
 }
 
 #endif

@@ -34,7 +34,7 @@ namespace api {
   struct IOIO {
     IOIO(string& _method, string& _host, string& _path, string& _data, std::map<string, string>& _headers)
       : method(_method), host(_host), path(_path), data(_data), headers(_headers) {}
-    IOIO(char* _method, char* _host, char* _path, char* _data, std::map<string, string>& _headers)
+    IOIO(const char* _method, const char* _host, const char* _path, const char* _data, std::map<string, string>& _headers)
       : method(_method), host(_host), path(_path), data(_data), headers(_headers) {}
     string method;
     string host;
@@ -106,8 +106,8 @@ namespace api {
       THREAD_LIMITER = make_unique<::Semaphore>(maxThreads);      
     
       //factory pattern
-      this->methodPromise = [](vector<shared_ptr<IOIO>> futures)->vector<shared_ptr<IOIO>> {
-        auto apiCall = [](shared_ptr<IOIO> o) {
+      this->methodPromise = [&](vector<shared_ptr<IOIO>> futures)->vector<shared_ptr<IOIO>> {
+        auto apiCall = [&](shared_ptr<IOIO> o) {
           Semaphore_waiter_notifier w(*THREAD_LIMITER);
 
           SimpleWeb::Client<T> client(o->host);

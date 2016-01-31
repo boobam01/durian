@@ -2,7 +2,8 @@
 #include <regex>
 #include <boost/filesystem.hpp>
 #include <fstream>
-#include "selectica.h"
+// #include "selectica.h"
+#include "spdlog/spdlog.h"
 
 auto setupLogging = []()->void {
 
