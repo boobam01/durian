@@ -81,36 +81,7 @@ namespace api {
           });
 
         };
-      
-        this->methodPromisePlus[verb] = [verb, this](string& params, string& data, std::map<string, string>& header)->boost::future<shared_ptr<Plustache::Context>> {
-
-          auto apiCallPlus = [&, this](const string host, const string verb, string& params, string& data, std::map<string, string>& header)->shared_ptr<Plustache::Context> {
-
-            SimpleWeb::Client<T> client(host);
-
-            shared_ptr<SimpleWeb::ClientBase<T>::Response> r1;
-
-            if (data.size() > 0){
-              stringstream ss;
-              ss << data;
-              r1 = client.request(verb, params, ss, header);
-            }
-            else {
-              r1 = client.request(verb, params, "", header);
-            }
-            ostringstream oss;
-            oss << r1->content.rdbuf();
-            auto ctx = make_shared<Plustache::Context>();
-            ctx->add("response", oss.str());
-            return ctx;
-          };
-
-          return boost::async([&]()->shared_ptr<Plustache::Context> {
-            return apiCallPlus(host, verb, params, data, header);
-          });
-
-        };
-
+        
       }); // le fin for_each
     }
     ~client(){}

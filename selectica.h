@@ -296,7 +296,7 @@ namespace selectica {
         ctx->add("propertyList", propertyList);
         auto createBOXml = this->createBOMsg(ctx);
         
-        dumpFile("CreateBO.xml", *createBOXml->c_str());
+        dumpFile("CreateBO.xml", createBOXml->c_str());
 
         // future factory
         auto future2 = apiClient->methodPromise["POST"];
@@ -335,8 +335,8 @@ namespace selectica {
       // start the promises
       auto promises = login(servicePath, *loginXml, customHeaders)
         .then(loginResponse)
-        .then(getData)
-        .then(getDataResponse)
+        .then(createBO)
+        .then(createBOResponse)
         .then(logout)
         .then(logoutResponse);
 
