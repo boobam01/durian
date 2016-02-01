@@ -2,7 +2,8 @@
   <ecm:SessionToken>{{token}}</ecm:SessionToken>
   <ecm:Event>CreateBO</ecm:Event>
   <ecm:Target>{{boType}}</ecm:Target>
-  <ecm:PropertyList id="{{listType}}">
+  {{# propertyList}}
+  <ecm:PropertyList id="{{id}}">
     {{# property}}
       <ecm:Property>
         <ecm:Name>{{name}}</ecm:Name>
@@ -11,4 +12,5 @@
       </ecm:Property>
     {{/ property}}
   </ecm:PropertyList>
+  {{/ propertyList}}
 </ecm:InvokeEvent>

@@ -280,7 +280,7 @@ namespace selectica {
       return ctx;
     }
 
-    shared_ptr<Plustache::Context> selectica::client<socketType>::CreateBO(PlustacheTypes::CollectionType& propertyList) {
+    shared_ptr<Plustache::Context> selectica::client<socketType>::CreateBO(char* boType, char* listType, PlustacheTypes::CollectionType& property) {
 
       // Login response
       auto loginResponse = [&](boost::future<std::string> f){
@@ -293,7 +293,9 @@ namespace selectica {
       // GetTrackingNums
       auto createBO = [&](boost::future<std::string> fut){
         // the session token is already stored in the context (ctx)
-        ctx->add("propertyList", propertyList);
+        ctx->add("boType", boType);
+        ctx->add("listType", listType);
+        ctx->add("property", property);
         auto createBOXml = this->createBOMsg(ctx);
         
         dumpFile("CreateBO.xml", createBOXml->c_str());
