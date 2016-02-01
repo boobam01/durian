@@ -16,6 +16,8 @@
 #include "client_http.hpp"
 #include "client_https.hpp"
 #include "semaphore.hpp"
+#include "plustache/plustache_types.hpp"
+#include "plustache/context.hpp"
 
 #include<boost/thread/future.hpp>
 #include <iostream>
@@ -30,7 +32,7 @@ using namespace std;
 static const std::list<string> methods{ "GET", "POST", "PUT", "PATCH", "DEL" };
 
 namespace api {
-
+  
   struct IOIO {
     IOIO(string& _method, string& _host, string& _path, string& _data, std::map<string, string>& _headers)
       : method(_method), host(_host), path(_path), data(_data), headers(_headers) {}
@@ -49,10 +51,11 @@ namespace api {
   public:
     client(string _host) : host(_host) {
 
+      // for each http/s verb, create a method factory that returns a future
       std::for_each(methods.begin(), methods.end(), [this](const string verb)->void{
 
         // promise pattern
-        this->methodPromise[verb] = [verb, this](string& params, string& data, std::map<string, string>& header)->boost::future<std::string> {
+        this->methodPromise[verb] = [verb, this](string& params, string& data, std::map<string, string>& header)->boost::future <std::string> {
 
           auto apiCall = [](const string host, const string verb, string& params, string& data, std::map<string, string>& header)->string {
 
@@ -78,7 +81,37 @@ namespace api {
           });
 
         };
-      });
+      
+        this->methodPromisePlus[verb] = [verb, this](string& params, string& data, std::map<string, string>& header)->boost::future<shared_ptr<Plustache::Context>> {
+
+          auto apiCallPlus = [&, this](const string host, const string verb, string& params, string& data, std::map<string, string>& header)->shared_ptr<Plustache::Context> {
+
+            SimpleWeb::Client<T> client(host);
+
+            shared_ptr<SimpleWeb::ClientBase<T>::Response> r1;
+
+            if (data.size() > 0){
+              stringstream ss;
+              ss << data;
+              r1 = client.request(verb, params, ss, header);
+            }
+            else {
+              r1 = client.request(verb, params, "", header);
+            }
+            ostringstream oss;
+            oss << r1->content.rdbuf();
+            auto ctx = make_shared<Plustache::Context>();
+            ctx->add("response", oss.str());
+            return ctx;
+          };
+
+          return boost::async([&]()->shared_ptr<Plustache::Context> {
+            return apiCallPlus(host, verb, params, data, header);
+          });
+
+        };
+
+      }); // le fin for_each
     }
     ~client(){}
     /*
@@ -86,8 +119,14 @@ namespace api {
     */
     std::unordered_map <string, std::function<boost::future<std::string>(string&, string&, std::map<string, string>&)>> methodPromise;
 
+    /*
+    map of <key, fn(string, string) => future<shared_ptr<Plustache::Context>>>
+    */
+    std::unordered_map <string, std::function<boost::future<shared_ptr<Plustache::Context>>(string&, string&, std::map<string, string>&)>> methodPromisePlus;
+    
   private:
     string host;
+        
   };
 
   template<typename T>

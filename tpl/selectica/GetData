@@ -1,0 +1,4 @@
+<GetData xmlns="http://ws.selectica.com/ecm/">
+  <SessionToken>{{token}}</SessionToken>
+  <Target>{{trackingNumber}}</Target>
+</GetData>
