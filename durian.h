@@ -9,7 +9,7 @@
 #include "xml2json.hpp"
 #include "rapidjson/document.h"
 #include "rapidjson/prettywriter.h"
-#include "rapidjson/reader.h"
+#include "json11.hxx"
 
 using namespace std;
 

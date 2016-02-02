@@ -82,7 +82,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\cygwin64\home\htao\spdlog\include;C:\local\boost_1_57_0;C:\cygwin64\home\htao\plustache\include;C:\cygwin64\home\htao\durian\include;C:\openssl-1.0.1l-vs2013\include;C:\cygwin64\home\htao\xml2json\include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>DEBUG;_WIN32_WINNT=0x600;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;DEBUG;_WIN32_WINNT=0x600;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -112,7 +112,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\cygwin64\home\htao\spdlog\include;C:\local\boost_1_57_0;C:\cygwin64\home\htao\plustache\include;C:\cygwin64\home\htao\durian\include;C:\openssl-1.0.1l-vs2013\include;C:\cygwin64\home\htao\xml2json\include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_WIN32_WINNT=0x600;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_WIN32_WINNT=0x600;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
