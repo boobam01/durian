@@ -41,4 +41,6 @@ test.cpp
 
 *.xml
 *.js
+*.csv
+*.tsv
 

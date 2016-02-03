@@ -26,12 +26,14 @@ namespace mongoclient {
       }
       return 0;
     }
-    std::auto_ptr<mongo::DBClientCursor> find(const string collection, mongo::Query cri, int limit, int skip, mongo::BSONObj* selector){
-      
-      auto cur = conn.query(database + "." + collection, cri, limit, skip, selector, 0, 0);
-      
+    std::auto_ptr<mongo::DBClientCursor> find(const string collection, mongo::Query cri, int limit, int skip, mongo::BSONObj* selector){      
+      auto cur = conn.query(database + "." + collection, cri, limit, skip, selector, 0, 0);      
       return cur;
-
+    }
+    std::shared_ptr<mongo::BSONObj> findOne(const string collection, mongo::Query cri, mongo::BSONObj* selector){
+      auto resp = conn.findOne(database + "." + collection, cri, selector, 0);
+      auto o = make_shared<mongo::BSONObj>(resp);
+      return o;
     }
 
 
