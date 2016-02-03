@@ -81,14 +81,23 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\cygwin64\home\htao\spdlog\include;C:\local\boost_1_57_0;C:\cygwin64\home\htao\plustache\include;C:\cygwin64\home\htao\durian\include;C:\openssl-1.0.1l-vs2013\include;C:\cygwin64\home\htao\xml2json\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\cygwin64\home\htao\spdlog\include;C:\local\boost_1_57_0;C:\cygwin64\home\htao\plustache\include;C:\cygwin64\home\htao\durian\include;C:\openssl-1.0.1l-vs2013\include;C:\cygwin64\home\htao\xml2json\include;C:\cygwin64\home\htao\mongo-cxx-driver\build\win32\64\dbg_off;C:\cygwin64\home\htao\mongo-cxx-driver\src</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;DEBUG;_WIN32_WINNT=0x600;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\local\boost_1_57_0\lib64-msvc-12.0;C:\cygwin64\home\htao\plustache\x64\Debug;C:\openssl-1.0.1l-vs2013\lib64</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\local\boost_1_57_0\lib64-msvc-12.0;C:\cygwin64\home\htao\plustache\x64\Debug;C:\openssl-1.0.1l-vs2013\lib64;C:\cygwin64\home\htao\mongo-cxx-driver\build\win32\64\dbg_on\dynamic-windows</AdditionalLibraryDirectories>
       <AdditionalDependencies>libeay32MTd.lib;ssleay32MTd.lib;plustache.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>copy /Y "$(ProjectDir)config.json" "$(TargetDir)config.json"
+copy /Y "C:\cygwin64\home\htao\mongo-cxx-driver\build\win32\64\dbg_on\dynamic-windows\mongoclient-gd.dll" "$(TargetDir)mongoclient-gd.dll
+copy /Y "C:\local\boost_1_57_0\lib64-msvc-12.0\boost_date_time-vc120-mt-gd-1_57.dll" "$(TargetDir)boost_date_time-vc120-mt-gd-1_57.dll"
+copy /Y "C:\local\boost_1_57_0\lib64-msvc-12.0\boost_thread-vc120-mt-gd-1_57.dll" "$(TargetDir)boost_thread-vc120-mt-gd-1_57.dll"
+copy /Y "C:\local\boost_1_57_0\lib64-msvc-12.0\boost_chrono-vc120-mt-gd-1_57.dll" "$(TargetDir)boost_chrono-vc120-mt-gd-1_57.dll"
+copy /Y "C:\local\boost_1_57_0\lib64-msvc-12.0\boost_regex-vc120-mt-gd-1_57.dll" "$(TargetDir)boost_regex-vc120-mt-gd-1_57.dll"
+copy /Y "C:\local\boost_1_57_0\lib64-msvc-12.0\boost_system-vc120-mt-gd-1_57.dll" "$(TargetDir)boost_system-vc120-mt-gd-1_57.dll"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -118,9 +127,18 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>C:\local\boost_1_57_0\lib64-msvc-12.0;C:\cygwin64\home\htao\plustache\x64\Release;C:\openssl-1.0.1l-vs2013\lib64</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\local\boost_1_57_0\lib64-msvc-12.0;C:\cygwin64\home\htao\plustache\x64\Release;C:\openssl-1.0.1l-vs2013\lib64;C:\cygwin64\home\htao\mongo-cxx-driver\build\win32\64\dbg_off\dynamic-windows</AdditionalLibraryDirectories>
       <AdditionalDependencies>libeay32MT.lib;ssleay32MT.lib;plustache.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>copy /Y "$(ProjectDir)config.json" "$(TargetDir)config.json"
+copy /Y "C:\cygwin64\home\htao\mongo-cxx-driver\build\win32\64\dbg_off\dynamic-windows\mongoclient.dll" "$(TargetDir)mongoclient.dll
+copy /Y "C:\local\boost_1_57_0\lib64-msvc-12.0\boost_date_time-vc120-mt-1_57.dll" "$(TargetDir)boost_date_time-vc120-mt-1_57.dll"
+copy /Y "C:\local\boost_1_57_0\lib64-msvc-12.0\boost_thread-vc120-mt-1_57.dll" "$(TargetDir)boost_thread-vc120-mt-1_57.dll"
+copy /Y "C:\local\boost_1_57_0\lib64-msvc-12.0\boost_chrono-vc120-mt-1_57.dll" "$(TargetDir)boost_chrono-vc120-mt-1_57.dll"
+copy /Y "C:\local\boost_1_57_0\lib64-msvc-12.0\boost_regex-vc120-mt-1_57.dll" "$(TargetDir)boost_regex-vc120-mt-1_57.dll"
+copy /Y "C:\local\boost_1_57_0\lib64-msvc-12.0\boost_system-vc120-mt-1_57.dll" "$(TargetDir)boost_system-vc120-mt-1_57.dll"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="index.cpp" />
@@ -129,6 +147,7 @@
   <ItemGroup>
     <ClInclude Include="api_client.h" />
     <ClInclude Include="durian.h" />
+    <ClInclude Include="mongoClient.h" />
     <ClInclude Include="selectica.h" />
   </ItemGroup>
   <ItemGroup>

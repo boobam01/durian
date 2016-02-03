@@ -10,6 +10,7 @@
 #include "rapidjson/document.h"
 #include "rapidjson/prettywriter.h"
 #include "json11.hxx"
+#include "mongoClient.h"
 
 using namespace std;
 
