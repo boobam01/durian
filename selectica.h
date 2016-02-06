@@ -11,7 +11,15 @@ using namespace durian;
 namespace selectica {
 
   template<typename socketType>
-  class client {
+  class client : public durian::client<socketType> {
+  public:  
+    client (const char* _host,
+      const char* _servicePath,
+      const char* _user,
+      const char* _password,
+      std::map<string, string>& _customHeaders) : durian::client<socketType>(_host, _servicePath, _user, _password, _customHeaders) {}
+  /*
+
     durian::generator<XmlElement::Message> generator;
     unique_ptr<api::client<socketType>> apiClient;
     PlustacheTypes::ObjectType user, password, token, response;
@@ -39,6 +47,7 @@ namespace selectica {
       (*ctx).add(password);
     }
     ~client(){}
+    */
 
     shared_ptr<string> loginMsg(shared_ptr<Plustache::Context> ctx) {
       return this->generator.render(ctx, "tpl/selectica/Login", "tpl/selectica/root");
@@ -349,6 +358,7 @@ namespace selectica {
     }
 
     private:
+      /*
       static string getToken(string res) {
         auto raw = xml2json(res.c_str());
         // parse the message
@@ -363,7 +373,7 @@ namespace selectica {
         auto raw = xml2json(res.c_str());
         return raw;
       }
-
+      */
   };
 
 }

@@ -112,11 +112,10 @@ namespace durian {
   };
 
   template<>
-  class generator < XmlElement::Message > {
+  class generator<XmlElement::Message> {
 
   public:
     shared_ptr<string> render(shared_ptr<Plustache::Context> ctx, char* _path, char* _rootPath) {
-
       string tplPath(_path);
       durian::generator<durian::XmlElement::Body> gen;
       auto body = gen.compile(ctx, tplPath);
@@ -130,9 +129,61 @@ namespace durian {
       auto message = rootGen.compile(rootCtx, rootPath);
 
       return message;
+    }
+  };
 
+  /*
+    client implenmentation
+    LOB client modules should derive from this base class
+  */
+  template<typename socketType>
+  class client {
+    
+  public:
+    
+    client<socketType>(const char* _host,
+      const char* _servicePath,
+      const char* _user,
+      const char* _password,
+      std::map<string, string>& _customHeaders) : host(_host), servicePath(_servicePath), userstr(_user), passwordstr(_password), customHeaders(_customHeaders) {
+
+      // create api::client<socketType>
+      apiClient = make_unique<api::client<SimpleWeb::HTTP>>(host);
+
+      // create the context that will be shared by all templates
+      ctx = make_shared<Plustache::Context>();
+
+      // store user & password in the context
+      user["user"] = userstr;
+      password["password"] = passwordstr;
+      (*ctx).add(user);
+      (*ctx).add(password);
+    }
+    ~client<socketType>(){}
+    client() = default;
+  protected:
+    
+    shared_ptr<Plustache::Context> ctx;
+    durian::generator<XmlElement::Message> generator;
+    unique_ptr<api::client<socketType>> apiClient;
+    PlustacheTypes::ObjectType user, password, token, response;
+    std::map<string, string> customHeaders;
+    string host, servicePath, userstr, passwordstr;
+
+    static string getToken(string res) {
+      auto raw = xml2json(res.c_str());
+      // parse the message
+      rapidjson::Document d;
+      d.Parse(raw.c_str());
+      // get the token from the message
+      auto tok = d["Envelope"]["Body"]["LoginResponse"]["SessionToken"].GetString();
+      return string(tok);
     }
 
+    static string getResponse(string res) {
+      auto raw = xml2json(res.c_str());
+      return raw;
+    }
   };
 
 }
