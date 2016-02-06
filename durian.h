@@ -161,6 +161,18 @@ namespace durian {
     }
     ~client<socketType>(){}
     client() = default;
+
+    std::function<string(boost::future<std::string>)> loginResponse() {
+      return[]()->std::function < string(boost::future<std::string>) > {
+        return [&](boost::future<std::string> f) mutable ->string{
+          auto res = f.get();
+          auto tok = getToken(res);
+          ctx->add("token", tok);
+          return tok;
+        };
+      };
+    }
+
   protected:
     
     shared_ptr<Plustache::Context> ctx;

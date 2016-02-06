@@ -226,7 +226,7 @@ namespace selectica {
       return ctx;
     }
 
-    shared_ptr<Plustache::Context> selectica::client<socketType>::GetData(char* trackingNumber) {
+    shared_ptr<Plustache::Context> selectica::client<socketType>::GetDataOld(char* trackingNumber) {
 
       // Login response
       auto loginResponse = [&](boost::future<std::string> f){
@@ -284,6 +284,21 @@ namespace selectica {
         .then(logoutResponse);
 
       // wait
+      auto resp = promises.get();
+
+      return ctx;
+    }
+
+    shared_ptr<Plustache::Context> selectica::client<socketType>::GetData(char* trackingNumber) {
+      // get a login future
+      auto login = apiClient->methodPromise["POST"];
+      // get login template
+      auto loginXml = this->loginMsg(ctx);
+      // start the promises
+      auto promises = login(servicePath, *loginXml, customHeaders)
+        .then(loginResponse());
+
+      //wait
       auto resp = promises.get();
 
       return ctx;
