@@ -18,377 +18,192 @@ namespace selectica {
       const char* _user,
       const char* _password,
       std::map<string, string>& _customHeaders) : durian::client<socketType>(_host, _servicePath, _user, _password, _customHeaders) {}
-  /*
-
-    durian::generator<XmlElement::Message> generator;
-    unique_ptr<api::client<socketType>> apiClient;
-    PlustacheTypes::ObjectType user, password, token, response;
-    shared_ptr<Plustache::Context> ctx;
-    std::map<string, string> customHeaders;
-    string host, servicePath, userstr, passwordstr;
-  public:
-    client(){}
-    client <socketType>(const char* _host,
-      const char* _servicePath,
-      const char* _user,
-      const char* _password,
-      std::map<string, string>& _customHeaders) : host(_host), servicePath(_servicePath), userstr(_user), passwordstr(_password), customHeaders(_customHeaders) {
-
-      // create api::client<socketType>
-      apiClient = make_unique<api::client<SimpleWeb::HTTP>>(host);
-
-      // create the context that will be shared by all templates
-      ctx = make_shared<Plustache::Context>();
-
-      // store user & password in the context
-      user["user"] = userstr;
-      password["password"] = passwordstr;
-      (*ctx).add(user);
-      (*ctx).add(password);
-    }
-    ~client(){}
-    */
-
-    shared_ptr<string> loginMsg(shared_ptr<Plustache::Context> ctx) {
-      return this->generator.render(ctx, "tpl/selectica/Login", "tpl/selectica/root");
-    }
-
-    shared_ptr<string> logoutMsg(shared_ptr<Plustache::Context> ctx) {
-      return this->generator.render(ctx, "tpl/selectica/Logout", "tpl/selectica/root");
-    }
-
-    shared_ptr<string> getBOTypesMsg(shared_ptr<Plustache::Context> ctx) {
-      return this->generator.render(ctx, "tpl/selectica/GetBOTypes", "tpl/selectica/root");
-    }
-
-    shared_ptr<string> getBOMetaDataMsg(shared_ptr<Plustache::Context> ctx) {
-      return this->generator.render(ctx, "tpl/selectica/GetBOMetaData", "tpl/selectica/root");
-    }
-
-    shared_ptr<string> getTrackingNumsMsg(shared_ptr<Plustache::Context> ctx) {
-      return this->generator.render(ctx, "tpl/selectica/GetTrackingNums", "tpl/selectica/root");
-    }
-
-    shared_ptr<string> getDataMsg(shared_ptr<Plustache::Context> ctx) {
-      return this->generator.render(ctx, "tpl/selectica/GetData", "tpl/selectica/root");
-    }
-
-    shared_ptr<string> createBOMsg(shared_ptr<Plustache::Context> ctx) {
-      return this->generator.render(ctx, "tpl/selectica/CreateBO", "tpl/selectica/root");
-    }
-
+  
     shared_ptr<Plustache::Context> selectica::client<socketType>::GetBOTypes() {
-
-      // Login response
-      auto loginResponse = [&](boost::future<std::string> f){
-        auto res = f.get();
-        // xml => json
-        auto raw = xml2json(res.c_str());
-        // parse the message
-        rapidjson::Document d;
-        d.Parse(raw.c_str());
-        dumpPrettyJson("LoginResponse.js", d);
-        // get the token from the message
-        auto tok = d["Envelope"]["Body"]["LoginResponse"]["SessionToken"].GetString();
-        // add token to context
-        token["token"] = tok;
-        (*ctx).add(token);
-
-        return string(tok);
-      };
-
-      // GetBOTypes
-      auto getBOTypes = [&](boost::future<std::string> fut){
-
-        // the session token is already stored in the context (ctx)
-        auto getBOTypesXml = this->getBOTypesMsg(ctx);
-        // future factory
-        auto future2 = apiClient->methodPromise["POST"];
-        // create the future
-        auto f2 = future2(servicePath, *getBOTypesXml, customHeaders);
-
-        return f2.get();
-      };
-
-      //GetBOTypes response
-      auto getBOTypesResponse = [&](boost::future<std::string> fut){
-
-        auto res = fut.get();
-        auto raw = xml2json(res.c_str());
-        //save response in the context, this will be used by the caller
-        response["GetBOTypes"] = raw;
-        (*ctx).add(response);
-
-        return raw;
-      };
-
-      // Logout
-      auto logout = [&](boost::future<std::string> f){
-        // the session token is in the ctx, it will be sent to the server to end session
-        auto logoutXml = this->logoutMsg(ctx);
-        auto future = apiClient->methodPromise["POST"];
-        auto pms = future(servicePath, *logoutXml, customHeaders);
-        return pms.get();
-      };
-
-      // Logout response
-      auto logoutResponse = [&](boost::future<std::string> f){
-        auto res = f.get();
-        return res;
-      };
-
       // get a login future
-      auto login = apiClient->methodPromise["POST"];
+      auto login = this->apiClient->methodPromise["POST"];
       // get login template
-      auto loginXml = this->loginMsg(ctx);
+      auto loginXml = this->generator.render(ctx, "tpl/selectica/Login", "tpl/selectica/root");
       // start the promises
       auto promises = login(servicePath, *loginXml, customHeaders)
-        .then(loginResponse)
-        .then(getBOTypes)
-        .then(getBOTypesResponse)
-        .then(logout)
-        .then(logoutResponse);
-
-      // wait
-      auto resp = promises.get();
-
-      return ctx;
-    }
-
-    shared_ptr<Plustache::Context> selectica::client<socketType>::GetTrackingNums(char* boType) {
-
-      // Login response
-      auto loginResponse = [&](boost::future<std::string> f){
-        auto res = f.get();
-        auto raw = xml2json(res.c_str());
-        // parse the message
-        rapidjson::Document d;
-        d.Parse(raw.c_str());
-        // get the token from the message
-        auto tok = d["Envelope"]["Body"]["LoginResponse"]["SessionToken"].GetString();
-        // add token to context
-        ctx->add("token", tok);
-        return string(tok);
-      };
-
-      // GetTrackingNums
-      auto getTrackingNums = [&](boost::future<std::string> fut){
-        // the session token is already stored in the context (ctx)
-        ctx->add("boType", boType);
-        auto getTrackingNumsXml = this->getTrackingNumsMsg(ctx);
-        // future factory
-        auto future2 = apiClient->methodPromise["POST"];
-        // create the future
-        auto f2 = future2(servicePath, *getTrackingNumsXml, customHeaders);
-        return f2.get();
-      };
-
-      // GetTrackingNums response
-      auto getTrackingNumsResponse = [&](boost::future<std::string> fut){
-        auto res = fut.get();
-        auto raw = xml2json(res.c_str());
-        //save response in the context, this will be used by the caller
-        response["GetTrackingNums"] = raw;
-        (*ctx).add(response);
-        return raw;
-      };
-
-      // Logout
-      auto logout = [&](boost::future<std::string> f){
-        // the session token is in the ctx, it will be sent to the server to end session
-        auto logoutXml = this->logoutMsg(ctx);
-        auto future = apiClient->methodPromise["POST"];
-        auto pms = future(servicePath, *logoutXml, customHeaders);
-        return pms.get();
-      };
-
-      // Logout response
-      auto logoutResponse = [&](boost::future<std::string> f){
-        auto res = f.get();
-        return res;
-      };
-
-      // get a login future
-      auto login = apiClient->methodPromise["POST"];
-      // get login template
-      auto loginXml = this->loginMsg(ctx);
-      // start the promises
-      auto promises = login(servicePath, *loginXml, customHeaders)
-        .then(loginResponse)
-        .then(getTrackingNums)
-        .then(getTrackingNumsResponse)
-        .then(logout)
-        .then(logoutResponse);
-
-      // wait
-      auto resp = promises.get();
-
-      return ctx;
-    }
-
-    shared_ptr<Plustache::Context> selectica::client<socketType>::GetDataOld(char* trackingNumber) {
-
-      // Login response
-      auto loginResponse = [&](boost::future<std::string> f){
-        auto res = f.get();
-        auto tok = getToken(res);
-        ctx->add("token", tok);
-        return tok;
-      };
-
-      // GetTrackingNums
-      auto getData = [&](boost::future<std::string> fut){
-        // the session token is already stored in the context (ctx)
-        ctx->add("trackingNumber", trackingNumber);
-        auto getDataXml = this->getDataMsg(ctx);
-        // future factory
-        auto future2 = apiClient->methodPromise["POST"];
-        // create the future
-        auto f2 = future2(servicePath, *getDataXml, customHeaders);
-        return f2.get();
-      };
-
-      // GetTrackingNums response
-      auto getDataResponse = [&](boost::future<std::string> fut){
-        auto res = fut.get();
-        auto raw = getResponse(res);
-        //save response in the context, this will be used by the caller
-        ctx->add("GetData", raw);
-        return raw;
-      };
-
-      // Logout
-      auto logout = [&](boost::future<std::string> f){
-        // the session token is in the ctx, it will be sent to the server to end session
-        auto logoutXml = this->logoutMsg(ctx);
-        auto future = apiClient->methodPromise["POST"];
-        auto pms = future(servicePath, *logoutXml, customHeaders);
-        return pms.get();
-      };
-
-      // Logout response
-      auto logoutResponse = [&](boost::future<std::string> f){
-        return f.get();
-      };
-
-      // get a login future
-      auto login = apiClient->methodPromise["POST"];
-      // get login template
-      auto loginXml = this->loginMsg(ctx);
-      // start the promises
-      auto promises = login(servicePath, *loginXml, customHeaders)
-        .then(loginResponse)
-        .then(getData)
-        .then(getDataResponse)
-        .then(logout)
-        .then(logoutResponse);
-
-      // wait
-      auto resp = promises.get();
-
-      return ctx;
-    }
-
-    shared_ptr<Plustache::Context> selectica::client<socketType>::GetData(char* trackingNumber) {
-      // get a login future
-      auto login = apiClient->methodPromise["POST"];
-      // get login template
-      auto loginXml = this->loginMsg(ctx);
-      // start the promises
-      auto promises = login(servicePath, *loginXml, customHeaders)
-        .then(loginResponse());
-
+        .then(loginResponse(this->ctx))
+        .then(getBOTypes(this->ctx, "tpl/selectica/GetBOTypes", "tpl/selectica/root", trackingNumber))
+        .then(getBOTypesResponse())
+        .then(logout(this->ctx, "tpl/selectica/Logout", "tpl/selectica/root"))
+        .then(logoutResponse());
       //wait
       auto resp = promises.get();
 
       return ctx;
     }
 
-    shared_ptr<Plustache::Context> selectica::client<socketType>::CreateBO(char* boType, char* listType, PlustacheTypes::CollectionType& property) {
-
-      // Login response
-      auto loginResponse = [&](boost::future<std::string> f){
-        auto res = f.get();
-        auto tok = getToken(res);
-        ctx->add("token", tok);
-        return tok;
-      };
-
-      // GetTrackingNums
-      auto createBO = [&](boost::future<std::string> fut){
-        // the session token is already stored in the context (ctx)
-        ctx->add("boType", boType);
-        ctx->add("listType", listType);
-        ctx->add("property", property);
-        auto createBOXml = this->createBOMsg(ctx);
-        
-        dumpFile("CreateBO.xml", createBOXml->c_str());
-
-        // future factory
-        auto future2 = apiClient->methodPromise["POST"];
-        // create the future
-        auto f2 = future2(servicePath, *createBOXml, customHeaders);
-        return f2.get();
-      };
-
-      // GetTrackingNums response
-      auto createBOResponse = [&](boost::future<std::string> fut){
-        auto res = fut.get();
-        auto raw = getResponse(res);
-        //save response in the context, this will be used by the caller
-        ctx->add("CreateBO", raw);
-        return raw;
-      };
-
-      // Logout
-      auto logout = [&](boost::future<std::string> f){
-        // the session token is in the ctx, it will be sent to the server to end session
-        auto logoutXml = this->logoutMsg(ctx);
-        auto future = apiClient->methodPromise["POST"];
-        auto pms = future(servicePath, *logoutXml, customHeaders);
-        return pms.get();
-      };
-
-      // Logout response
-      auto logoutResponse = [&](boost::future<std::string> f){
-        return f.get();
-      };
-
+    shared_ptr<Plustache::Context> selectica::client<socketType>::GetTrackingNums(const string boType) {
       // get a login future
-      auto login = apiClient->methodPromise["POST"];
+      auto login = this->apiClient->methodPromise["POST"];
       // get login template
-      auto loginXml = this->loginMsg(ctx);
+      auto loginXml = this->generator.render(ctx, "tpl/selectica/Login", "tpl/selectica/root");
       // start the promises
       auto promises = login(servicePath, *loginXml, customHeaders)
-        .then(loginResponse)
-        .then(createBO)
-        .then(createBOResponse)
-        .then(logout)
-        .then(logoutResponse);
+        .then(loginResponse(this->ctx))
+        .then(getTrackingNums(this->ctx, "tpl/selectica/GetTrackingNums", "tpl/selectica/root", boType))
+        .then(getTrackingNumsResponse())
+        .then(logout(this->ctx, "tpl/selectica/Logout", "tpl/selectica/root"))
+        .then(logoutResponse());
+      //wait
+      auto resp = promises.get();
 
-      // wait
+      return ctx;
+    }
+
+    shared_ptr<Plustache::Context> selectica::client<socketType>::GetData(const string trackingNumber) {
+      // get a login future
+      auto login = this->apiClient->methodPromise["POST"];
+      // get login template
+      auto loginXml = this->generator.render(ctx, "tpl/selectica/Login", "tpl/selectica/root");       
+      // start the promises
+      auto promises = login(servicePath, *loginXml, customHeaders)
+        .then(loginResponse(this->ctx))
+        .then(getData(this->ctx, "tpl/selectica/GetData", "tpl/selectica/root", trackingNumber))
+        .then(getDataResponse())
+        .then(logout(this->ctx, "tpl/selectica/Logout", "tpl/selectica/root"))
+        .then(logoutResponse());
+      //wait
+      auto resp = promises.get();
+
+      return ctx;
+    }
+
+    shared_ptr<Plustache::Context> selectica::client<socketType>::CreateBO(const string boType, const string listType, PlustacheTypes::CollectionType& property) {
+      // get a login future
+      auto login = this->apiClient->methodPromise["POST"];
+      // get login template
+      auto loginXml = this->generator.render(ctx, "tpl/selectica/Login", "tpl/selectica/root");
+      // start the promises
+      auto promises = login(servicePath, *loginXml, customHeaders)
+        .then(loginResponse(this->ctx))
+        .then(createBO(this->ctx, "tpl/selectica/CreateBO", "tpl/selectica/root", boType, listType, property))
+        .then(createBOResponse())
+        .then(logout(this->ctx, "tpl/selectica/Logout", "tpl/selectica/root"))
+        .then(logoutResponse());
+      //wait
       auto resp = promises.get();
 
       return ctx;
     }
 
     private:
-      /*
-      static string getToken(string res) {
-        auto raw = xml2json(res.c_str());
-        // parse the message
-        rapidjson::Document d;
-        d.Parse(raw.c_str());
-        // get the token from the message
-        auto tok = d["Envelope"]["Body"]["LoginResponse"]["SessionToken"].GetString();
-        return string(tok);
+      // GetData
+      std::function<string(boost::future<std::string>)> getData(shared_ptr<Plustache::Context> ctx, const string bodyTpl, const string rootTpl, const string trackingNumber) {
+        return [&, bodyTpl, rootTpl, trackingNumber](boost::future<std::string> f)->string{
+          // the session token is already stored in the context (ctx)
+          ctx->add("trackingNumber", trackingNumber);
+          auto getDataXml = this->generator.render(ctx, bodyTpl, rootTpl);
+          // future factory
+          auto future2 = apiClient->methodPromise["POST"];
+          // create the future
+          auto f2 = future2(servicePath, *getDataXml, customHeaders);
+          return f2.get();
+        };
       }
 
-      static string getResponse(string res) {
-        auto raw = xml2json(res.c_str());
-        return raw;
+      // GetData response
+      std::function<string(boost::future<std::string>)> getDataResponse() {
+        return [&](boost::future<std::string> fut)->string{
+          auto res = fut.get();
+          auto raw = getResponse(res);
+          //save response in the context, this will be used by the caller
+          ctx->add("GetData", raw);
+          return raw;
+        };
       }
-      */
+      
+      // GetTrackingNums
+      std::function<string(boost::future<std::string>)> getTrackingNums(shared_ptr<Plustache::Context> ctx, const string bodyTpl, const string rootTpl, const string boType) {
+        return [&, bodyTpl, rootTpl, boType](boost::future<std::string> f)->string{
+          //auto getTrackingNums = [&](boost::future<std::string> fut){
+          // the session token is already stored in the context (ctx)
+          ctx->add("boType", boType);
+          auto getTrackingNumsXml = this->generator.render(ctx, bodyTpl, rootTpl);
+          // future factory
+          auto future2 = apiClient->methodPromise["POST"];
+          // create the future
+          auto f2 = future2(servicePath, *getTrackingNumsXml, customHeaders);
+          return f2.get();
+        };
+      }
+
+      // GetTrackingNums response
+      std::function<string(boost::future<std::string>)> getTrackingNumsResponse() {
+        return [&](boost::future<std::string> fut)->string{          
+          auto res = fut.get();
+          auto raw = xml2json(res.c_str());
+          //save response in the context, this will be used by the caller
+          response["GetTrackingNums"] = raw;
+          (*ctx).add(response);
+          return raw;
+        };
+      }
+
+      // GetBOTypes
+      std::function<string(boost::future<std::string>)> getBOTypes(shared_ptr<Plustache::Context> ctx, const string bodyTpl, const string rootTpl) {
+        return [&, bodyTpl, rootTpl](boost::future<std::string> fut)->string{
+          // the session token is already stored in the context (ctx)
+          auto getBOTypesXml = this->generator.render(ctx, bodyTpl, rootTpl);
+          // future factory
+          auto future2 = apiClient->methodPromise["POST"];
+          // create the future
+          auto f2 = future2(servicePath, *getBOTypesXml, customHeaders);
+
+          return f2.get();
+        };
+      }
+
+      //GetBOTypes response
+      std::function<string(boost::future<std::string>)> getBOTypesResponse() {
+        return [&](boost::future<std::string> fut)->string{
+          auto res = fut.get();
+          auto raw = xml2json(res.c_str());
+          //save response in the context, this will be used by the caller
+          response["GetBOTypes"] = raw;
+          (*ctx).add(response);
+
+          return raw;
+        };
+      }
+
+      // CreateBO
+      std::function<string(boost::future<std::string>)> createBO(shared_ptr<Plustache::Context> ctx, const string bodyTpl, const string rootTpl, const string boType, const string listType, PlustacheTypes::CollectionType& property) {
+        return [&, bodyTpl, rootTpl, boType, listType](boost::future<std::string> f)->string{
+
+          //auto createBO = [&](boost::future<std::string> fut){
+          // the session token is already stored in the context (ctx)
+          ctx->add("boType", boType);
+          ctx->add("listType", listType);
+          ctx->add("property", property);
+
+          auto createBOXml = this->generator.render(ctx, bodyTpl, rootTpl);
+
+          dumpFile("CreateBO.xml", createBOXml->c_str());
+
+          // future factory
+          auto future2 = apiClient->methodPromise["POST"];
+          // create the future
+          auto f2 = future2(servicePath, *createBOXml, customHeaders);
+          return f2.get();
+        };
+      }
+
+      // CreateBO response
+      std::function<string(boost::future<std::string>)> createBOResponse() {
+        return [&](boost::future<std::string> fut)->string{
+          //auto createBOResponse = [&](boost::future<std::string> fut){
+          auto res = fut.get();
+          auto raw = getResponse(res);
+          //save response in the context, this will be used by the caller
+          ctx->add("CreateBO", raw);
+          return raw;
+        };
+      }
   };
 
 }

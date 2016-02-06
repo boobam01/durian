@@ -115,7 +115,7 @@ namespace durian {
   class generator<XmlElement::Message> {
 
   public:
-    shared_ptr<string> render(shared_ptr<Plustache::Context> ctx, char* _path, char* _rootPath) {
+    shared_ptr<string> render(shared_ptr<Plustache::Context> ctx, const string _path, const string _rootPath) {
       string tplPath(_path);
       durian::generator<durian::XmlElement::Body> gen;
       auto body = gen.compile(ctx, tplPath);
@@ -138,9 +138,9 @@ namespace durian {
   */
   template<typename socketType>
   class client {
-    
+
   public:
-    
+
     client<socketType>(const char* _host,
       const char* _servicePath,
       const char* _user,
@@ -162,14 +162,34 @@ namespace durian {
     ~client<socketType>(){}
     client() = default;
 
-    std::function<string(boost::future<std::string>)> loginResponse() {
-      return[]()->std::function < string(boost::future<std::string>) > {
-        return [&](boost::future<std::string> f) mutable ->string{
-          auto res = f.get();
-          auto tok = getToken(res);
-          ctx->add("token", tok);
-          return tok;
-        };
+    std::function<string(boost::future<std::string>)> loginResponse(shared_ptr<Plustache::Context> ctx) {
+      return [&](boost::future<std::string> f) ->string{
+        auto res = f.get();
+        auto tok = getToken(res);
+        ctx->add("token", tok);
+        return tok;
+      };
+    }
+
+    // Logout
+    std::function<string(boost::future<std::string>)> logout(shared_ptr<Plustache::Context> ctx, const string bodyTpl, const string rootTpl) {
+      //auto logout = [&](boost::future<std::string> f){
+      return [&,bodyTpl,rootTpl](boost::future<std::string> f)->string{
+      // the session token is in the ctx, it will be sent to the server to end session
+        auto logoutXml = this->generator.render(ctx, bodyTpl, rootTpl);
+        auto future = apiClient->methodPromise["POST"];
+        auto pms = future(servicePath, *logoutXml, customHeaders);
+        return pms.get();
+      };
+    }
+
+    // Logout response
+    std::function<string(boost::future<std::string>)> logoutResponse() {
+      return [&](boost::future<std::string> f)->string{
+        //auto logoutResponse = [&](boost::future<std::string> f){
+        auto resp = f.get();
+        // dumpFile("logoutResponse", resp.c_str());
+        return resp;
       };
     }
 

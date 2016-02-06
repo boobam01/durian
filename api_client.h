@@ -56,11 +56,11 @@ namespace api {
 
         // promise pattern
         this->methodPromise[verb] = [verb, this](string& params, string& data, std::map<string, string>& header)->boost::future <std::string> {
-
+          /*
+            implementation of generic REST client
+          */
           auto apiCall = [](const string host, const string verb, string& params, string& data, std::map<string, string>& header)->string {
-
             SimpleWeb::Client<T> client(host);
-
             shared_ptr<SimpleWeb::ClientBase<T>::Response> r1;
 
             if (data.size() > 0){
@@ -90,11 +90,6 @@ namespace api {
     */
     std::unordered_map <string, std::function<boost::future<std::string>(string&, string&, std::map<string, string>&)>> methodPromise;
 
-    /*
-    map of <key, fn(string, string) => future<shared_ptr<Plustache::Context>>>
-    */
-    std::unordered_map <string, std::function<boost::future<shared_ptr<Plustache::Context>>(string&, string&, std::map<string, string>&)>> methodPromisePlus;
-    
   private:
     string host;
         
