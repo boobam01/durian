@@ -11,6 +11,7 @@
 #include "rapidjson/prettywriter.h"
 #include "json11.hxx"
 #include "mongoClient.h"
+#include "frozen.h"
 
 using namespace std;
 
