@@ -16,8 +16,8 @@
 #include "client_http.hpp"
 #include "client_https.hpp"
 #include "semaphore.hpp"
-#include "plustache/plustache_types.hpp"
-#include "plustache/context.hpp"
+// #include "plustache/plustache_types.hpp"
+// #include "plustache/context.hpp"
 
 #include<boost/thread/future.hpp>
 #include <iostream>
@@ -46,7 +46,7 @@ namespace api {
     std::map<string, string> headers;
   };
 
-  template<class T>
+  template<typename T>
   class client {
   public:
     client(string _host) : host(_host) {
@@ -84,12 +84,13 @@ namespace api {
         
       }); // le fin for_each
     }
+    client(){};
     ~client(){}
     /*
     map of <key, fn(string, string) => future<string>>
     */
     std::unordered_map <string, std::function<boost::future<std::string>(string&, string&, std::map<string, string>&)>> methodPromise;
-
+    
   private:
     string host;
         

@@ -219,24 +219,35 @@ namespace durian {
     }
   };
 
-}
-
-/*
+  /*
   utils
-*/
-static void dumpFile(const char* fname, const char* content) {
-  ofstream f;
-  f.open(fname);
-  f << content;
-  f.close();
-}
+  */
+  static void dumpFile(const char* fname, const char* content) {
+    ofstream f;
+    f.open(fname);
+    f << content;
+    f.close();
+  }
 
-static void dumpPrettyJson(const char* outfile, rapidjson::Document& d) {
-  // stringify prettyprint
-  rapidjson::StringBuffer sb;
-  rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
-  d.Accept(writer);
-  dumpFile(outfile, sb.GetString());
+  static void dumpPrettyJson(const char* outfile, rapidjson::Document& d) {
+    // stringify prettyprint
+    rapidjson::StringBuffer sb;
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
+    d.Accept(writer);
+    dumpFile(outfile, sb.GetString());
+  }
+
+  static void createContextFromJson(const char* rawJson, std::list<const char*>& selectors, shared_ptr<Plustache::Context> ctx) {
+
+    struct json_token *arr, *tok;
+    arr = parse_json2(rawJson, strlen(rawJson));
+    for (auto& e : selectors){
+      tok = find_json_token(arr, e);
+      ctx.get()->add(string(e), string(tok->ptr, tok->len));
+    }
+    free(arr);
+  }
+
 }
 
 #endif
