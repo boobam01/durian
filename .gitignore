@@ -43,4 +43,5 @@ test.cpp
 *.js
 *.csv
 *.tsv
+*.xlsx
 
