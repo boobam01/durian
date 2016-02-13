@@ -2,10 +2,12 @@
 #define DURIAN_H
 
 #include <iostream>
+#include "api_client.h" /* api_client.h MUST go first b/c ASIO */
 #include "spdlog/spdlog.h"
-#include "plustache/template.hpp"
-#include "plustache/plustache_types.hpp"
-#include "plustache/context.hpp"
+// #include "plustache/template.hpp"
+// #include "plustache/plustache_types.hpp"
+// #include "plustache/context.hpp"
+#include "plustache.hxx"
 #include "xml2json.hpp"
 #include "rapidjson/document.h"
 #include "rapidjson/prettywriter.h"

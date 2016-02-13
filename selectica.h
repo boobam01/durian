@@ -1,7 +1,7 @@
 #ifndef SELECTICA_H
 #define SELECTICA_H
 
-#include "api_client.h" /* api_client.h MUST go first b/c ASIO */
+// #include "api_client.h" /* api_client.h MUST go first b/c ASIO */
 #include "durian.h"
 #include <functional>
 
