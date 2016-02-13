@@ -23,23 +23,35 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="durian.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="selectica.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="api_client.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mongoClient.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="frozen.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <None Include="config.json" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="config.json" />
+    <ClInclude Include="include\api_client.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\client_http.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\client_https.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\durian.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\frozen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\json11.hxx">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mongoClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\plustache.hxx">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\semaphore.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
