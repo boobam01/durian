@@ -1,6 +1,0 @@
-<ecm:GetTrackingNums>
-  <!--Optional:-->
-  <ecm:SessionToken>{{token}}</ecm:SessionToken>
-  <!--Optional:-->
-  <ecm:BOType>{{boType}}</ecm:BOType>
-</ecm:GetTrackingNums>

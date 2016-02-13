@@ -1,3 +1,0 @@
-<Logout xmlns="http://ws.selectica.com/ecm/">
-  <SessionToken>{{token}}</SessionToken>
-</Logout>
