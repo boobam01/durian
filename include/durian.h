@@ -245,6 +245,14 @@ namespace durian {
     dumpFile(outfile, sb.GetString());
   }
 
+  static void writeoutJson(shared_ptr<Plustache::Context> resp, char* key) {
+    rapidjson::Document d;
+    d.Parse(resp->get(key).front()[key].c_str());
+    string outname(key);
+    outname.append(".js");
+    dumpPrettyJson(outname.c_str(), d);
+  }
+
   static void createContextFromJson(const char* rawJson, std::list<const char*>& selectors, shared_ptr<Plustache::Context> ctx) {
 
     struct json_token *arr, *tok;
