@@ -204,7 +204,6 @@ namespace durian {
     virtual void loadConfig(char* filename) {}
 
   protected:
-    
     shared_ptr<Plustache::Context> ctx;
     durian::generator<XmlElement::Message> generator;
     unique_ptr<api::client<socketType>> apiClient;
@@ -264,7 +263,13 @@ namespace durian {
     for (auto& t : list){
       auto e = t[selector];
       tok = find_json_token(arr, e.c_str());
-      ctx.get()->add(string(e), string(tok->ptr, tok->len));
+      if (!tok) {
+        continue;
+      }
+      string a(tok->ptr, tok->len);
+      if (a != "null") {
+        ctx.get()->add(string(e), a);
+      }
     }
     free(arr);
   }
