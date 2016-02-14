@@ -40,10 +40,10 @@ namespace mongoclient {
 
     std::function<boost::future<std::string>(const string, mongo::Query, mongo::BSONObj*)> findOnePromise() {
       return [this](const string collection, mongo::Query cri, mongo::BSONObj* selector)->boost::future<string> {
-        return boost::async([&]()->string {
+        return boost::async([=]()->string {
           auto resp = conn.findOne(database + "." + collection, cri, selector, 0);
-          auto o = make_shared<mongo::BSONObj>(resp);
-          return o->jsonString(mongo::Strict, 0, false);
+          auto o = resp.jsonString(mongo::Strict, 0, false);
+          return o;
         });
       };
     }
