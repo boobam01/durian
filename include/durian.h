@@ -253,6 +253,21 @@ namespace durian {
     dumpPrettyJson(outname.c_str(), d);
   }
 
+  static void writeoutPlustacheCollection(shared_ptr<Plustache::Context> resp, char* key) {
+    string outname(key);
+    outname.append(".js");
+
+    ofstream f;
+    f.open(outname);
+
+    for (auto& e : resp->get(key)) {
+      for (int i = 0; i < e.size(); i++){
+        
+      }
+    }
+    f.close();
+  }
+
   static void createContextFromJson(const char* rawJson, std::list<const char*>& selectors, shared_ptr<Plustache::Context> ctx) {
 
     struct json_token *arr, *tok;
