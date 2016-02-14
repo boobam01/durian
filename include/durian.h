@@ -12,6 +12,7 @@
 #include "mongoClient.h"
 #include "frozen.h"
 #include <boost/filesystem.hpp>
+#include "boost/date_time/posix_time/posix_time.hpp"
 
 using namespace std;
 
@@ -287,6 +288,21 @@ namespace durian {
       }
     }
     free(arr);
+  }
+
+  /*
+    @param v 2016-02-03T14:40:55.803Z
+  */
+  static string formatTime(string& v, char* timeFormat) {
+    auto t = v.substr(0, 10) + " " + v.substr(11, 12);
+    boost::posix_time::ptime time = boost::posix_time::time_from_string(t);
+    std::stringstream ss;
+    boost::posix_time::time_facet* facet = new boost::posix_time::time_facet();
+    // M/d/yyyy
+    facet->format(timeFormat);
+    ss.imbue(std::locale(std::locale::classic(), facet));
+    ss << time;
+    return ss.str();
   }
 
   static void setupLogging (const string logName) {
