@@ -4,9 +4,6 @@
 #include <iostream>
 #include "api_client.h" /* api_client.h MUST go first b/c ASIO */
 #include "spdlog/spdlog.h"
-// #include "plustache/template.hpp"
-// #include "plustache/plustache_types.hpp"
-// #include "plustache/context.hpp"
 #include "plustache.hxx"
 #include "xml2json.hpp"
 #include "rapidjson/document.h"
@@ -14,10 +11,14 @@
 #include "json11.hxx"
 #include "mongoClient.h"
 #include "frozen.h"
+#include <boost/filesystem.hpp>
 
 using namespace std;
 
 namespace durian {
+
+  // should contain global context/config
+  static Plustache::Context context;
 
   namespace XmlElement {
     class Root;
@@ -141,9 +142,7 @@ namespace durian {
   */
   template<typename socketType>
   class client {
-
   public:
-
     client<socketType>(const char* _host,
       const char* _servicePath,
       const char* _user,
@@ -157,10 +156,12 @@ namespace durian {
       ctx = make_shared<Plustache::Context>();
 
       // store user & password in the context
-      user["user"] = userstr;
-      password["password"] = passwordstr;
-      (*ctx).add(user);
-      (*ctx).add(password);
+      // user["user"] = userstr;
+      // password["password"] = passwordstr;
+      // (*ctx).add(user);
+      // (*ctx).add(password);
+      (*ctx).add("user", userstr);
+      (*ctx).add("password", passwordstr);
     }
     ~client<socketType>(){}
     client() = default;
@@ -195,6 +196,12 @@ namespace durian {
         return resp;
       };
     }
+
+    // should override mapping file
+    virtual void loadMapping(char* filename) {}
+
+    // should override config file
+    virtual void loadConfig(char* filename) {}
 
   protected:
     
@@ -248,6 +255,39 @@ namespace durian {
       ctx.get()->add(string(e), string(tok->ptr, tok->len));
     }
     free(arr);
+  }
+
+  static void createContextFromJson(const char* rawJson, PlustacheTypes::CollectionType& list, const string selector, shared_ptr<Plustache::Context> ctx) {
+
+    struct json_token *arr, *tok;
+    arr = parse_json2(rawJson, strlen(rawJson));
+    for (auto& t : list){
+      auto e = t[selector];
+      tok = find_json_token(arr, e.c_str());
+      ctx.get()->add(string(e), string(tok->ptr, tok->len));
+    }
+    free(arr);
+  }
+
+  static void setupLogging (const string logName) {
+
+    if (boost::filesystem::create_directory("./log")){
+      boost::filesystem::path full_path(boost::filesystem::current_path());
+      std::cout << "Successfully created directory"
+        << full_path
+        << "/log"
+        << "\n";
+    }
+
+    size_t q_size = 1048576; //queue size must be power of 2
+    spdlog::set_async_mode(q_size);
+
+    std::vector<spdlog::sink_ptr> sinks;
+    sinks.push_back(std::make_shared<spdlog::sinks::daily_file_sink_mt>("log/" + logName, "txt", 0, 0));
+    auto combined_logger = std::make_shared<spdlog::logger>("logger", begin(sinks), end(sinks));
+    combined_logger->set_pattern("[%Y-%d-%m %H:%M:%S:%e] [%l] [thread %t] %v");
+    spdlog::register_logger(combined_logger);
+
   }
 
 }

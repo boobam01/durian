@@ -26,16 +26,27 @@ namespace mongoclient {
       }
       return 0;
     }
+
     std::auto_ptr<mongo::DBClientCursor> find(const string collection, mongo::Query cri, int limit, int skip, mongo::BSONObj* selector){      
       auto cur = conn.query(database + "." + collection, cri, limit, skip, selector, 0, 0);      
       return cur;
     }
+
     std::shared_ptr<mongo::BSONObj> findOne(const string collection, mongo::Query cri, mongo::BSONObj* selector){
       auto resp = conn.findOne(database + "." + collection, cri, selector, 0);
       auto o = make_shared<mongo::BSONObj>(resp);
       return o;
     }
 
+    std::function<boost::future<std::string>(const string, mongo::Query, mongo::BSONObj*)> findOnePromise() {
+      return [this](const string collection, mongo::Query cri, mongo::BSONObj* selector)->boost::future<string> {
+        return boost::async([&]()->string {
+          auto resp = conn.findOne(database + "." + collection, cri, selector, 0);
+          auto o = make_shared<mongo::BSONObj>(resp);
+          return o->jsonString(mongo::Strict, 0, false);
+        });
+      };
+    }
 
   };
 }

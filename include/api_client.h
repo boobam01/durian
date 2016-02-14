@@ -55,7 +55,7 @@ namespace api {
       std::for_each(methods.begin(), methods.end(), [this](const string verb)->void{
 
         // promise pattern
-        this->methodPromise[verb] = [verb, this](string& params, string& data, std::map<string, string>& header)->boost::future <std::string> {
+        this->methodPromise[verb] = [verb, this](string& params, string& data, std::map<string, string>& header)->boost::future<std::string> {
           /*
             implementation of generic REST client
           */
