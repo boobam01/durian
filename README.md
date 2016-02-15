@@ -2,27 +2,46 @@
 
 The fourth of many fruits.  Stinky. :stuck_out_tongue_closed_eyes:
 
-A C++11 helper library for writing and working with fruits. 
+A C++11 helper library for writing and working with the fruits. 
 
 ####Use durian with promises
 This is an example of invoking a SOAP action.
 ```cpp
-  shared_ptr<Plustache::Context> selectica::client<socketType>::GetData(const string trackingNumber) {
+  shared_ptr<Plustache::Context> vendor::client<socketType>::GetData(const string trackingNumber) {
     // get a login future
     auto login = this->apiClient->methodPromise["POST"];
     // get login template
-    auto loginXml = this->generator.render(ctx, "tpl/selectica/Login", "tpl/selectica/root");
+    auto loginXml = this->generator.render(ctx, "tpl/vendor/Login", "tpl/vendor/root");
     // start the promises
     auto promises = login(servicePath, *loginXml, customHeaders)
       .then(loginResponse(this->ctx))
-      .then(getData(this->ctx, "tpl/selectica/GetData", "tpl/selectica/root", trackingNumber))
+      .then(getData(this->ctx, "tpl/vendor/GetData", "tpl/vendor/root", trackingNumber))
       .then(getDataResponse())
-      .then(logout(this->ctx, "tpl/selectica/Logout", "tpl/selectica/root"))
+      .then(logout(this->ctx, "tpl/vendor/Logout", "tpl/vendor/root"))
       .then(logoutResponse());
     //wait
     auto resp = promises.get();
     return ctx;
   }
+```
+
+####Use durian to write code your coworkers can read
+What will your code look like?
+```cpp
+  template<typename socketType>
+  class client : public durian::client<socketType>
+  // . . .
+  std::map<string, string> customHeaders = { { "Content-Type", "text/xml" } };
+  client<SimpleWeb::HTTP> simpleClient("vendorHost:8080", "/someService", "user", "password", customHeaders);
+  // get result
+  auto resp = simpleClient.GetData("1234");
+
+  // same API for another vendor
+  std::map<string, string> customHeaders = { { "Content-Type", "application/json" } };
+  // use SSL
+  client<SimpleWeb::HTTPS> simpleClient("anotherVendorHost:8080", "/someService", "user", "password", customHeaders);
+  // get result
+  auto resp = simpleClient.GetOtherData("1234");
 ```
 
 ####Use durian with parallel processing
