@@ -18,9 +18,6 @@ using namespace std;
 
 namespace durian {
 
-  // should contain global context/config
-  static Plustache::Context context;
-
   namespace XmlElement {
     class Root;
     class Body;
