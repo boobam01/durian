@@ -48,9 +48,7 @@ What will your code look like?
 This example uses the global ```::parallel_for_each``` function in durian to make parallel calls to google search.
 ```cpp
   int parallelCallExample() {
-
     auto apiCall = [](shared_ptr<IOIO> o) {
-
       Semaphore_waiter_notifier w(THREAD_LIMITER);
 
       SimpleWeb::Client<SimpleWeb::HTTPS> client(o->host);
@@ -61,7 +59,6 @@ This example uses the global ```::parallel_for_each``` function in durian to mak
     };
 
     vector<shared_ptr<IOIO>> futures;
-
     std::map<string, string> headers{ { "foo", "bar" } };
 
     IOIO ioio1("GET", "www.google.com", "/search?q=apple", "", headers);
@@ -79,8 +76,6 @@ This example uses the global ```::parallel_for_each``` function in durian to mak
     for (auto& e : futures){
       cout << e->response << endl;
     }
-
     return 0;
-
   }
 ```
