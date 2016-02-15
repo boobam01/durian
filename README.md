@@ -45,7 +45,7 @@ What will your code look like?
 ```
 
 ####Use durian with parallel processing
-This example uses the global ::parallel_for_each function in durian to make parallel calls to google search.
+This example uses the global ```::parallel_for_each``` function in durian to make parallel calls to google search.
 ```cpp
   int parallelCallExample() {
 
