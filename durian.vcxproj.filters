@@ -18,9 +18,6 @@
     <ClCompile Include="index.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="frozen.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="config.json" />
@@ -38,9 +35,6 @@
     <ClInclude Include="include\durian.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\frozen.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\json11.hxx">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -51,6 +45,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\semaphore.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\frozen.hxx">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -10,7 +10,7 @@
 #include "rapidjson/prettywriter.h"
 #include "json11.hxx"
 #include "mongoClient.h"
-#include "frozen.h"
+#include "frozen.hxx"
 #include <boost/filesystem.hpp>
 #include "boost/date_time/posix_time/posix_time.hpp"
 
@@ -200,6 +200,14 @@ namespace durian {
 
     // should override config file
     virtual void loadConfig(char* filename) {}
+
+    // favor composition
+    template<typename T>
+    void compose(T context, std::vector<std::function<void(T)>> _functions) {
+      for (auto& fn : _functions) {
+        fn(context);
+      }        
+    }
 
   protected:
     shared_ptr<Plustache::Context> ctx;
