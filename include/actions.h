@@ -4,23 +4,27 @@
 #include <iostream>
 namespace {
   
-  template<typename FUNC, typename CONTEXT, typename T>
+  template<typename FUNC, typename CONTEXT>
   class Composer {
     FUNC f_;
     CONTEXT c_;
-    T t_;
   public:
-    Composer(FUNC f, CONTEXT c, T t) : f_(f), c_(c), t_(t) {}
+    Composer(FUNC f, CONTEXT c) : f_(f), c_(c) {}
 
-    template <typename CTX, typename T>
-    CTX operator() (CTX& x, T& t) const {
-      return f_(x, t);
+    template <typename CTX, typename... PARAMS>
+    CTX operator() (CTX& x, PARAMS... p) const {
+      return f_(x, &p...);
     }
   };
 
-  template <typename F, typename C, typename T>
-  Composer<F,C,T> createAction(const F f, C c, T t) {
-    return Composer<F,C,T>(f, c, t);
+  /*
+    given parameters of a function, a context, and one parameter
+    use Variadic templates
+    returns a function of func(context, param...)->context
+  */
+  template <typename F, typename C>
+  Composer<F,C> createAction(const F f, C c) {
+    return Composer<F,C>(f, c);
   }
 
 }
