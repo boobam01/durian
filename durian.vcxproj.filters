@@ -50,5 +50,8 @@
     <ClInclude Include="include\frozen.hxx">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\compose.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
