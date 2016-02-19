@@ -53,5 +53,8 @@
     <ClInclude Include="include\compose.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\actions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

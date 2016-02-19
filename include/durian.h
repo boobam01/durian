@@ -14,6 +14,7 @@
 #include <boost/filesystem.hpp>
 #include "boost/date_time/posix_time/posix_time.hpp"
 #include "compose.h"
+#include "actions.h"
 
 using namespace std;
 
