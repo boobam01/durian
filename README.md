@@ -63,65 +63,71 @@ This is an example of invoking a SOAP action.
 ```cpp
   // test thunks
   {
-    auto f = [](string s, string* t)->string {
-      s.append(*t);
-      return s;
+    typedef std::vector<string> CONTEXT;
+    
+    auto f = [](CONTEXT v, string* t)->CONTEXT {
+      v.push_back(*t);
+      return v;
     };
 
-    auto f2 = [](string s, string* t, string* t2)->string {
-      s.append(*t);
-      s.append(*t2);
-      return s;
+    auto f2 = [](CONTEXT v, string* t, string* t2)->CONTEXT {
+      v.push_back(*t);
+      v.push_back(*t2);
+      return v;
     };
 
-    auto f3 = [](string s, string* t, string* t2, string* t3)->string {
-      s.append(*t);
-      s.append(*t2);
-      s.append(*t3);
-      return s;
+    auto f3 = [](CONTEXT v, string* t, string* t2, string* t3)->CONTEXT {
+      v.push_back(*t);
+      v.push_back(*t2);
+      v.push_back(*t3);
+      return v;
     };
 
-    string context("Hello");
-    string param(" World");
-    string param2(" John");
-    string param3(" Smith");
+    CONTEXT context{ "Hello" };
+    string param("World");
+    string param2("John");
+    string param3("Smith");
+    std::ostringstream ss;
 
     // test 1 parameter argument
-    // returns a function f(context, param)
-    auto action = createAction(f, context);
+    // returns a function f(context, param...)
+    auto action = createAction(f);
     
     // dispatch action with 1 parameter
-    auto resp = action(context, param);
+    auto newContext = action(context, param);
 
     // expect => Hello World
-    cout << resp << endl;
+    std::copy(newContext.begin(), newContext.end(), std::ostream_iterator<std::string>(ss, " "));
+    cout << ss.str() << endl;
 
     // test 2 parameter arguments
-    // returns a function f(context, param, param2)
-    auto action2 = createAction(f2, context);
+    // returns a function f(context, param...)
+    auto action2 = createAction(f2);
 
     // dispatch action with 2 parameter
-    auto resp2 = action2(context, param, param2);
+    auto newContext2 = action2(context, param, param2);
     
     // expect => Hello World John
-    cout << resp2 << endl;
+    ss.str("");
+    std::copy(newContext2.begin(), newContext2.end(), std::ostream_iterator<std::string>(ss, " "));
+    cout << ss.str() << endl;
 
     // test 3 parameter arguments
-    // returns a function f(context, param, param2, param3)
-    auto action3 = createAction(f3, context);
+    // returns a function f(context, param...)
+    auto action3 = createAction(f3);
 
     // dispatch action with 2 parameter
-    auto resp3 = action3(context, param, param2, param3);
+    auto newContext3 = action3(context, param, param2, param3);
 
     // expect => Hello World John Smith
-    cout << resp3 << endl;
-
-    /*
-      console should display:
-      Hello World
-      Hello World John
-      Hello World John Smith
-    */
+    ss.str("");
+    std::copy(newContext3.begin(), newContext3.end(), std::ostream_iterator<std::string>(ss, " "));
+    cout << ss.str() << endl;
+    
+    // console should display:
+    // Hello World
+    // Hello World John
+    // Hello World John Smith    
   }
 ```
 ####Use durian to write code your coworkers can read
