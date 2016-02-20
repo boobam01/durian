@@ -28,7 +28,7 @@ This is an example of invoking a SOAP action.
 ####Use durian with promises and MongoDB
 ```cpp
   int testMongoPromise() {
-    mongoclient::client client("locahost", "27017", "collection");
+    mongoclient::client client("locahost", "27017", "database");
 
     auto rc = client.connect();
 
@@ -40,7 +40,7 @@ This is an example of invoking a SOAP action.
     auto b = make_unique<mongo::BSONObj>();
     auto fetch = client.findOnePromise();
 
-    auto promise = fetch("_DocumentReview", cri, b.get())
+    auto promise = fetch("collection", cri, b.get())
       .then([&](boost::future<std::string> fut)->string{
         auto resp = fut.get();
         // do some useful stuff
