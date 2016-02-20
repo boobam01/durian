@@ -10,8 +10,11 @@ namespace {
     Composer(FUNC f) : f_(f) {}
 
     template <typename CTX, typename... PARAMS>
-    CTX operator() (CTX& x, PARAMS... p) const {
-      return f_(x, &p...);
+    std::function<CTX(CTX)> operator() (CTX& x, PARAMS... p) const {
+      return [=,&x](CTX&)->CTX { 
+        f_(x, &p...); 
+        return x;
+      };
     }
   };
 
