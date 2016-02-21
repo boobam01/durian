@@ -203,14 +203,6 @@ namespace durian {
     // should override config file
     virtual void loadConfig(char* filename) {}
 
-    // favor composition
-    template<typename T>
-    void compose(T context, std::vector<std::function<void(T)>> _functions) {
-      for (auto& fn : _functions) {
-        fn(context);
-      }        
-    }
-
   protected:
     shared_ptr<Plustache::Context> ctx;
     durian::generator<XmlElement::Message> generator;
