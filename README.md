@@ -59,6 +59,54 @@ This is an example of invoking a SOAP action.
   }
 ``` 
 
+####Use durian with function composition _(favor combining simple functions where the result of one function is the argument for the next function)
+
+### Why _composition_?
+* Functions are reusable
+* Can possibly shuffle the sequence of functions to produce the desired result instead of writing an entirely new routine
+* Avoid unnessarily long script-like code that are hard to read and troubleshoot
+
+Here's a contrived example
+```cpp
+  // test composition
+  {
+    typedef shared_ptr<std::vector<string>> TODOS;
+
+    auto EAT = [](TODOS v, const string* t)->TODOS {
+      (*v).push_back(*t);
+      return v;
+    };
+
+    auto SLEEP = [](TODOS v, const string* t)->TODOS {
+      (*v).push_back(*t);
+      return v;
+    };
+
+    auto PROGRAM = [](TODOS v, const string* t)->TODOS {
+      (*v).push_back(*t);
+      return v;
+    };
+
+    TODOS todos = make_shared<std::vector<string>>();
+
+    auto eatAction = createAction(EAT, todos, "cheese");
+    auto sleepAction = createAction(SLEEP, todos, "4 hours");
+    auto programAction = createAction(PROGRAM, todos, "javascript");
+    
+    // on Monday, you may have a routine like this and does it in sequence
+    auto MONDAY = compose(eatAction, programAction, sleepAction)(todos);
+
+    // on Tuesday, maybe you like to start your day programming
+    auto TUESDAY = compose(programAction, sleepAction, eatAction)(todos);
+
+    // on Wednesday, maybe you wanna do some C++ and SASS, but you still have to eat and sleep
+    auto programAction2 = createAction(PROGRAM, todos, "javascript", "SASS");
+    auto WEDNESDAY = compose(programAction2, eatAction, sleepAction)(todos);
+
+    // yep, all of the above will work with durian
+  }
+```
+
 ####Use durian with thunks _(delayed execution by invoking a function that returns a function, you are responsible for invoking the returned function)_
 ```cpp
   // test thunks
