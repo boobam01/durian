@@ -92,11 +92,12 @@ This is an example of invoking a SOAP action.
 
     // test 1 parameter argument
     // returns a function f(context, param...)
-    auto deferredAction = createAction(f);
-    auto action = deferredAction(context, param);
+    auto action = createAction(f, context, param);
     
     // dispatch action with 1 parameter
     auto newContext = action(context);
+
+    // auto newContext = action(context);
 
     // expect => Hello World
     std::copy((*newContext).begin(), (*newContext).end(), std::ostream_iterator<std::string>(ss, " "));
@@ -104,9 +105,8 @@ This is an example of invoking a SOAP action.
 
     // test 2 parameter arguments
     // returns a function f(context, param...)
-    (*context).clear();
-    auto deferredAction2 = createAction(f2);
-    auto action2 = deferredAction2(context, param, param2);
+    (*context).erase((*context).begin() + 1);
+    auto action2 = createAction(f2, context, param, param2);
     
     // dispatch action with 2 parameter
     auto newContext2 = action2(context);
@@ -118,10 +118,9 @@ This is an example of invoking a SOAP action.
 
     // test 3 parameter arguments
     // returns a function f(context, param...)
-    (*context).clear();
-    auto deferredAction3 = createAction(f3);
-    auto action3 = deferredAction3(context, param, param2, param3);
-
+    (*context).erase((*context).begin() + 1);
+    auto action3 = createAction(f3, context, param, param2, param3);
+    
     // dispatch action with 2 parameter
     auto newContext3 = action3(context);
 
