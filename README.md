@@ -70,40 +70,52 @@ Here's a contrived example
 ```cpp
   // test composition
   {
-    typedef shared_ptr<std::vector<string>> TODOS;
+    
+    // remember, we are composing, so the final results will be LIFO order
+    // so we're going to use deque, not vector, because we're inserting in the front
+    typedef shared_ptr<std::deque<string>> TODOS;
 
-    auto EAT = [](TODOS v, const string* t)->TODOS {
-      (*v).push_back(*t);
+    auto EAT = [](TODOS v, const char* const* t)->TODOS {
+      (*v).push_front("eat " + string(*t));
       return v;
     };
 
-    auto SLEEP = [](TODOS v, const string* t)->TODOS {
-      (*v).push_back(*t);
+    auto SLEEP = [](TODOS v, const char* const* t)->TODOS {
+      (*v).push_front("sleep " + string(*t));
       return v;
     };
 
-    auto PROGRAM = [](TODOS v, const string* t)->TODOS {
-      (*v).push_back(*t);
+    auto PROGRAM = [](TODOS v, const char* const* t)->TODOS {      
+      (*v).push_front("program " + string(*t));
       return v;
     };
 
-    TODOS todos = make_shared<std::vector<string>>();
+    auto PROGRAM2 = [](TODOS v, const char* const* t, const char*const* u)->TODOS {
+      (*v).push_front("program " + string(*t));
+      (*v).push_front("program " + string(*u));
+      return v;
+    };
+
+    TODOS todos = make_shared<std::deque<string>>();
 
     auto eatAction = createAction(EAT, todos, "cheese");
     auto sleepAction = createAction(SLEEP, todos, "4 hours");
     auto programAction = createAction(PROGRAM, todos, "javascript");
     
     // on Monday, you may have a routine like this and does it in sequence
+    // result => ["eat cheese", "sleep 4 hours", "program javascript"]
     auto MONDAY = compose(eatAction, programAction, sleepAction)(todos);
 
+    (*todos).clear();
     // on Tuesday, maybe you like to start your day programming
+    // result => ["program javascript", "sleep 4 hours", "eat cheese"]
     auto TUESDAY = compose(programAction, sleepAction, eatAction)(todos);
 
+    (*todos).clear();
     // on Wednesday, maybe you wanna do some C++ and SASS, but you still have to eat and sleep
-    auto programAction2 = createAction(PROGRAM, todos, "C++", "SASS");
+    // result => ["program SASS", "program C++", "eat cheese", "sleep 4 hours"]
+    auto programAction2 = createAction(PROGRAM2, todos, "C++", "SASS");
     auto WEDNESDAY = compose(programAction2, eatAction, sleepAction)(todos);
-
-    // yep, all of the above will work with durian
   }
 ```
 
