@@ -260,6 +260,10 @@ namespace durian {
     dumpFile(outname.c_str(), resp->get(key).front()[key].c_str());
   }
 
+  static void addToLog(shared_ptr<Plustache::Context> resp, char* key) {
+    spdlog::get("logger")->info() << resp->get(key).front()[key];
+  }
+
   static void createContextFromJson(const char* rawJson, std::list<const char*>& selectors, shared_ptr<Plustache::Context> ctx) {
 
     struct json_token *arr, *tok;
