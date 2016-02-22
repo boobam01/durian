@@ -59,7 +59,7 @@ This is an example of invoking a SOAP action.
   }
 ``` 
 
-####Use durian with function composition _(favor combining simple functions where the result of one function is the argument for the next function)
+###Use durian with function composition _(favor combining simple functions where the result of one function is the argument for the next function)_
 
 ### Why _composition_?
 * Functions are reusable
