@@ -100,7 +100,7 @@ Here's a contrived example
     auto TUESDAY = compose(programAction, sleepAction, eatAction)(todos);
 
     // on Wednesday, maybe you wanna do some C++ and SASS, but you still have to eat and sleep
-    auto programAction2 = createAction(PROGRAM, todos, "javascript", "SASS");
+    auto programAction2 = createAction(PROGRAM, todos, "C++", "SASS");
     auto WEDNESDAY = compose(programAction2, eatAction, sleepAction)(todos);
 
     // yep, all of the above will work with durian
