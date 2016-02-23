@@ -261,7 +261,12 @@ namespace durian {
   }
 
   static void addToLog(shared_ptr<Plustache::Context> resp, char* key) {
-    spdlog::get("logger")->info() << resp->get(key).front()[key];
+    auto logger = spdlog::get("logger");
+    if (!logger) {
+      cout << "Client did not create a logger!" << endl;
+      return;
+    }
+    logger->info() << key << " => " << resp->get(key).front()[key];
   }
 
   static void createContextFromJson(const char* rawJson, std::list<const char*>& selectors, shared_ptr<Plustache::Context> ctx) {
