@@ -122,6 +122,7 @@ Here's a contrived example
 ###Use durian with flow _(left to right function execution)_
 
 ```compose``` executes functions from right to left and may not be intuitive for the developer.
+
 For left to right execution, use ```flow``` instead.
 
 ```cpp
