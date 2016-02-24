@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <tuple>
-#include <type_traits>
 
 namespace {
   /*
@@ -25,7 +24,7 @@ namespace {
   };
 
   template <typename F>
-  class Composer2 < F > {
+  class Composer2 <F> {
     F f_;
   public:
     Composer2(F f) : f_(f) {}
@@ -42,37 +41,31 @@ namespace {
   }
   
   // flow
-  
-  // forward decl
-  template<class ...Tn>
-  struct revert;
+  // reversed indices...
+  template<unsigned... Is> struct seq{ using type = seq; };
 
-  // recursion anchor
-  template<>
-  struct revert<> {
-    template<class ...Un>
-    static void apply(Un const&... un) {
-      // cout << sizeof...(un);
+  template<unsigned I, unsigned... Is>
+  struct rgen_seq : rgen_seq<I - 1, Is..., I - 1>{};
+
+  template<unsigned... Is>
+  struct rgen_seq<0, Is...> : seq<Is...>{};
+
+  template<typename CTX>
+  struct flow {
+    CTX ctx;
+    flow(CTX _ctx) { ctx = _ctx; }
+    
+    template<class Tup, unsigned... Is>
+    CTX revertHelper(Tup&& t, seq<Is...>) {
+      return compose(std::get<Is>(std::forward<Tup>(t))...)(ctx);
+    }
+
+    template <typename... F>
+    CTX operator() (F... f) {
+      auto t = std::forward_as_tuple(std::forward<F>(f)...);
+      return revertHelper(t, rgen_seq<sizeof...(F)>{});
     }
   };
-
-  template<class T, class ...Tn>
-  struct revert<T, Tn...>
-  {
-    template<class ...Un>
-    static void apply(T const& t, Tn const&... tn, Un const&... un)
-    {
-      // bubble 1st parameter backwards
-      revert<Tn...>::apply(tn..., t, un...);
-    }
-  };
-
-  // using recursive function
-  template<class A, class ...An>
-  Composer2<An...> flow(A const& a, An const&... an) {
-    revert<An...>::apply(an..., a);
-    return Composer2<An...>(an...);
-  }
 
   /*
   int f(int x) { return x + 1; }
@@ -80,8 +73,18 @@ namespace {
   int h(int x) { return x - 1; }
 
   int main() {
-  std::cout << compose(f, g, h)(42);
-  return 0;
+    // compose
+    // f(g(h(42))) right to left
+    // result is 83
+    std::cout << compose(f, g, h)(42);
+    
+    // flow
+    // h(g(f(42))) left to right
+    // result is 85
+    flow<int> f1(42);
+    std::cout << f1(f, g, h) << endl;
+
+    return 0;
   }
   */
 

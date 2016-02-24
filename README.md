@@ -119,7 +119,33 @@ Here's a contrived example
   }
 ```
 
-####Use durian with thunks _(delayed execution by invoking a function that returns a function, you are responsible for invoking the returned function)_
+###Use durian with flow _(left to right function execution)_
+
+```compose``` executes functions from right to left and may not be intuitive for the developer.
+For left to right execution, use ```flow``` instead.
+
+```cpp
+  int f(int x) { return x + 1; }
+  int g(int x) { return x * 2; }
+  int h(int x) { return x - 1; }
+
+  int main() {
+    // compose
+    // f(g(h(42))) right to left
+    // result is 83
+    std::cout << compose(f, g, h)(42);
+    
+    // flow
+    // h(g(f(42))) left to right
+    // result is 85
+    flow<int> f1(42);
+    std::cout << f1(f, g, h) << endl;
+
+    return 0;
+  }
+```
+
+###Use durian with thunks _(delayed execution by invoking a function that returns a function, you are responsible for invoking the returned function)_
 ```cpp
   // test thunks
   {
@@ -195,7 +221,7 @@ Here's a contrived example
     // Hello World John Smith    
   }
 ```
-####Use durian to write code your coworkers can read
+###Use durian to write code your coworkers can read
 What will your code look like?
 ```cpp
   template<typename socketType>
@@ -214,7 +240,7 @@ What will your code look like?
   auto resp = simpleClient.GetOtherData("1234");
 ```
 
-####Use durian with parallel processing
+###Use durian with parallel processing
 This example uses the global ```::parallel_for_each``` function in durian to make parallel calls to google search.
 ```cpp
   int parallelCallExample() {
