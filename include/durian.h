@@ -285,17 +285,36 @@ namespace durian {
   static void createContextFromJson(const char* rawJson, PlustacheTypes::CollectionType& list, const string selector, shared_ptr<Plustache::Context> ctx) {
 
     struct json_token *arr, *tok;
+    
     arr = parse_json2(rawJson, strlen(rawJson));
     for (auto& t : list){
       auto e = t[selector];
-      tok = find_json_token(arr, e.c_str());
-      if (!tok) {
-        continue;
+      //is this an array?
+      string err;
+      auto o = json11::Json::parse(e, err, json11::STANDARD);
+      if (o.is_array()) {
+        string ss;
+        for (const auto& k : o.array_items()){
+          tok = find_json_token(arr, k.string_value().c_str());
+          if (tok) {
+            string a(tok->ptr, tok->len);
+            ss.append(a + ", ");
+          }
+        }
+        if (ss.size() > 0) {
+          ctx.get()->add(string(e), ss.substr(0, ss.size() - 2));
+        }
       }
-      string a(tok->ptr, tok->len);
-      if (a != "null") {
-        ctx.get()->add(string(e), a);
-      }
+      else {
+        tok = find_json_token(arr, e.c_str());
+        if (!tok) {
+          continue;
+        }
+        string a(tok->ptr, tok->len);
+        if (a != "null") {
+          ctx.get()->add(string(e), a);
+        }
+      }     
     }
     free(arr);
   }
