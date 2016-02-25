@@ -170,6 +170,8 @@ namespace durian {
       return [&](boost::future<std::string> f) ->string{
         auto res = f.get();
         auto tok = getToken(res);
+        // remove previous token if exist
+        ctx->remove("token");
         ctx->add("token", tok);
         return tok;
       };
