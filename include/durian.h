@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "api_client.h" /* api_client.h MUST go first b/c ASIO */
+#include "api_server.h"
 #include "spdlog/spdlog.h"
 #include "plustache.hxx"
 #include "xml2json.hpp"

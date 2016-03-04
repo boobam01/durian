@@ -206,6 +206,7 @@ copy /Y "C:\local\boost_1_57_0\lib64-msvc-12.0\boost_system-vc120-mt-1_57.dll" "
   <ItemGroup>
     <ClInclude Include="include\actions.h" />
     <ClInclude Include="include\api_client.h" />
+    <ClInclude Include="include\api_server.h" />
     <ClInclude Include="include\client_http.hpp" />
     <ClInclude Include="include\client_https.hpp" />
     <ClInclude Include="include\compose.h" />
@@ -215,6 +216,8 @@ copy /Y "C:\local\boost_1_57_0\lib64-msvc-12.0\boost_system-vc120-mt-1_57.dll" "
     <ClInclude Include="include\mongoClient.h" />
     <ClInclude Include="include\plustache.hxx" />
     <ClInclude Include="include\semaphore.hpp" />
+    <ClInclude Include="include\server_http.hpp" />
+    <ClInclude Include="include\server_https.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

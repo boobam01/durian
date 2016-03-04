@@ -56,5 +56,14 @@
     <ClInclude Include="include\actions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\api_server.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\server_http.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\server_https.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
