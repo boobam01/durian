@@ -1,11 +1,11 @@
-#ifndef ACTIONS_H
-#define ACTIONS_H
+#ifndef THUNKS_H
+#define THUNKS_H
 
 #include <iostream>
 namespace {
   
   template <typename F, typename CTX, typename... PARAMS>
-  std::function<CTX(CTX)> createAction(const F f_, CTX& x, PARAMS... p) {
+  std::function<CTX(CTX)> createThunk(const F f_, CTX& x, PARAMS... p) {
     return [=, &x](CTX&)->CTX {
       f_(x, &p...);
       return x;
@@ -50,12 +50,12 @@ std::ostringstream ss;
 
 // test 1 parameter argument
 // returns a function f(context, param...)
-auto action = createAction(f, context, param);
+auto thunk = createThunk(f, context, param);
 
-// dispatch action with 1 parameter
-auto newContext = action(context);
+// dispatch thunk with 1 parameter
+auto newContext = thunk(context);
 
-// auto newContext = action(context);
+// auto newContext = thunk(context);
 
 // expect => Hello World
 std::copy((*newContext).begin(), (*newContext).end(), std::ostream_iterator<std::string>(ss, " "));
@@ -64,10 +64,10 @@ cout << ss.str() << endl;
 // test 2 parameter arguments
 // returns a function f(context, param...)
 (*context).erase((*context).begin() + 1);
-auto action2 = createAction(f2, context, param, param2);
+auto thunk2 = createThunk(f2, context, param, param2);
 
-// dispatch action with 2 parameter
-auto newContext2 = action2(context);
+// dispatch thunk with 2 parameter
+auto newContext2 = thunk2(context);
 
 // expect => Hello World John
 ss.str("");
@@ -77,10 +77,10 @@ cout << ss.str() << endl;
 // test 3 parameter arguments
 // returns a function f(context, param...)
 (*context).erase((*context).begin() + 1);
-auto action3 = createAction(f3, context, param, param2, param3);
+auto thunk3 = createThunk(f3, context, param, param2, param3);
 
-// dispatch action with 2 parameter
-auto newContext3 = action3(context);
+// dispatch thunk with 2 parameter
+auto newContext3 = thunk3(context);
 
 // expect => Hello World John Smith
 ss.str("");
