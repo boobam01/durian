@@ -4,8 +4,26 @@ The fourth of many fruits.  Stinky. :stuck_out_tongue_closed_eyes:
 
 A C++11 very opinionated helper library for writing and working with the _Fruits Framework_. 
 
+If you compile in linux or Mac, use [Facebook folly](https://github.com/facebook/folly) instead.
+
+# TOC
+  - [Promises](#promises)
+    - [SOAP](#soap-promise-example)
+    - [MongoDB](#mongodb-promise-example)
+  - [Thunks](#thunks)
+  - [Higher-order Functions](#higher-order-functions)
+    - [Composition](#composition)
+    - [Flow](#flow)
+  - [Parallel Processing](#parallel-processing)
+  - [Readability](#readability)
+
+<a name=""></a>
+
+<a name="promises"></a>
+###Promises
+<a name="soap-promise-example"></a>
 ####Use durian with promises
-This is an example of invoking a SOAP action.
+This is an example of invoking a SOAP thunk.
 ```cpp
   shared_ptr<Plustache::Context> vendor::client<socketType>::GetData(const string trackingNumber) {
     // get a login future
@@ -24,7 +42,7 @@ This is an example of invoking a SOAP action.
     return ctx;
   }
 ```
-
+<a name="mongodb-promise-example"></a>
 ####Use durian with promises and MongoDB
 ```cpp
   int testMongoPromise() {
@@ -57,11 +75,91 @@ This is an example of invoking a SOAP action.
 
     return 0;
   }
-``` 
+```
+<a name="thunks"></a>
+###Thunks
+####Use durian with thunks _(delayed execution by invoking a function that returns a function, you are responsible for invoking the returned function)_
+```cpp
+  // test thunks
+  {
+    typedef shared_ptr<std::vector<string>> CONTEXT;
+    
+    auto f = [](CONTEXT v, const string* t)->CONTEXT {
+      (*v).push_back(*t);
+      return v;
+    };
 
-###Use durian with function composition _(favor combining simple functions where the result of one function is the argument for the next function)_
+    auto f2 = [](CONTEXT v, const string* t, const string* t2)->CONTEXT {
+      (*v).push_back(*t);
+      (*v).push_back(*t2);
+      return v;
+    };
 
-### Why _composition_?
+    auto f3 = [](CONTEXT v, const string* t, const string* t2, const string* t3)->CONTEXT {
+      (*v).push_back(*t);
+      (*v).push_back(*t2);
+      (*v).push_back(*t3);
+      return v;
+    };
+
+    CONTEXT context = make_shared<std::vector<string>>();
+    *context = { "Hello" };
+    string param("World");
+    string param2("John");
+    string param3("Smith");
+    std::ostringstream ss;
+
+    // test 1 parameter argument
+    // returns a function f(context, param...)
+    auto thunk = createThunk(f, context, param);
+    
+    // execute thunk with 1 parameter
+    auto newContext = thunk(context);
+
+    // auto newContext = thunk(context);
+
+    // expect => Hello World
+    std::copy((*newContext).begin(), (*newContext).end(), std::ostream_iterator<std::string>(ss, " "));
+    cout << ss.str() << endl;
+
+    // test 2 parameter arguments
+    // returns a function f(context, param...)
+    (*context).erase((*context).begin() + 1);
+    auto thunk2 = createThunk(f2, context, param, param2);
+    
+    // execute thunk with 2 parameter
+    auto newContext2 = thunk2(context);
+    
+    // expect => Hello World John
+    ss.str("");
+    std::copy((*newContext2).begin(), (*newContext2).end(), std::ostream_iterator<std::string>(ss, " "));
+    cout << ss.str() << endl;
+
+    // test 3 parameter arguments
+    // returns a function f(context, param...)
+    (*context).erase((*context).begin() + 1);
+    auto thunk3 = createThunk(f3, context, param, param2, param3);
+    
+    // execute thunk with 2 parameter
+    auto newContext3 = thunk3(context);
+
+    // expect => Hello World John Smith
+    ss.str("");
+    std::copy((*newContext3).begin(), (*newContext3).end(), std::ostream_iterator<std::string>(ss, " "));
+    cout << ss.str() << endl;
+    
+    // console should display:
+    // Hello World
+    // Hello World John
+    // Hello World John Smith    
+  }
+```
+<a name="higher-order-functions"></a>
+###Higher-order Functions
+<a name="composition"></a>
+####Use durian with function composition _(favor combining simple functions where the result of one function is the argument for the next function)_
+
+#### Why _composition_?
 * Functions are reusable
 * Can possibly shuffle the sequence of functions to produce the desired result instead of writing an entirely new routine
 * Avoid unnessarily long script-like code that are hard to read and troubleshoot
@@ -98,28 +196,28 @@ Here's a contrived example
 
     TODOS todos = make_shared<std::deque<string>>();
 
-    auto eatAction = createAction(EAT, todos, "cheese");
-    auto sleepAction = createAction(SLEEP, todos, "4 hours");
-    auto programAction = createAction(PROGRAM, todos, "javascript");
+    auto eatThunk = createThunk(EAT, todos, "cheese");
+    auto sleepThunk = createThunk(SLEEP, todos, "4 hours");
+    auto programThunk = createThunk(PROGRAM, todos, "javascript");
     
     // on Monday, you may have a routine like this and does it in sequence
     // result => ["eat cheese", "sleep 4 hours", "program javascript"]
-    auto MONDAY = compose(eatAction, programAction, sleepAction)(todos);
+    auto MONDAY = compose(eatThunk, programThunk, sleepThunk)(todos);
 
     (*todos).clear();
     // on Tuesday, maybe you like to start your day programming
     // result => ["program javascript", "sleep 4 hours", "eat cheese"]
-    auto TUESDAY = compose(programAction, sleepAction, eatAction)(todos);
+    auto TUESDAY = compose(programThunk, sleepThunk, eatThunk)(todos);
 
     (*todos).clear();
     // on Wednesday, maybe you wanna do some C++ and SASS, but you still have to eat and sleep
     // result => ["program SASS", "program C++", "eat cheese", "sleep 4 hours"]
-    auto programAction2 = createAction(PROGRAM2, todos, "C++", "SASS");
-    auto WEDNESDAY = compose(programAction2, eatAction, sleepAction)(todos);
+    auto programThunk2 = createThunk(PROGRAM2, todos, "C++", "SASS");
+    auto WEDNESDAY = compose(programThunk2, eatThunk, sleepThunk)(todos);
   }
 ```
-
-###Use durian with flow _(left to right function execution)_
+<a name="flow"></a>
+####Use durian with flow _(left to right function execution)_
 
 ```compose``` executes functions from right to left and may not be intuitive for the developer.
 
@@ -145,102 +243,7 @@ For left to right execution, use ```flow``` instead.
     return 0;
   }
 ```
-
-###Use durian with thunks _(delayed execution by invoking a function that returns a function, you are responsible for invoking the returned function)_
-```cpp
-  // test thunks
-  {
-    typedef shared_ptr<std::vector<string>> CONTEXT;
-    
-    auto f = [](CONTEXT v, const string* t)->CONTEXT {
-      (*v).push_back(*t);
-      return v;
-    };
-
-    auto f2 = [](CONTEXT v, const string* t, const string* t2)->CONTEXT {
-      (*v).push_back(*t);
-      (*v).push_back(*t2);
-      return v;
-    };
-
-    auto f3 = [](CONTEXT v, const string* t, const string* t2, const string* t3)->CONTEXT {
-      (*v).push_back(*t);
-      (*v).push_back(*t2);
-      (*v).push_back(*t3);
-      return v;
-    };
-
-    CONTEXT context = make_shared<std::vector<string>>();
-    *context = { "Hello" };
-    string param("World");
-    string param2("John");
-    string param3("Smith");
-    std::ostringstream ss;
-
-    // test 1 parameter argument
-    // returns a function f(context, param...)
-    auto action = createAction(f, context, param);
-    
-    // dispatch action with 1 parameter
-    auto newContext = action(context);
-
-    // auto newContext = action(context);
-
-    // expect => Hello World
-    std::copy((*newContext).begin(), (*newContext).end(), std::ostream_iterator<std::string>(ss, " "));
-    cout << ss.str() << endl;
-
-    // test 2 parameter arguments
-    // returns a function f(context, param...)
-    (*context).erase((*context).begin() + 1);
-    auto action2 = createAction(f2, context, param, param2);
-    
-    // dispatch action with 2 parameter
-    auto newContext2 = action2(context);
-    
-    // expect => Hello World John
-    ss.str("");
-    std::copy((*newContext2).begin(), (*newContext2).end(), std::ostream_iterator<std::string>(ss, " "));
-    cout << ss.str() << endl;
-
-    // test 3 parameter arguments
-    // returns a function f(context, param...)
-    (*context).erase((*context).begin() + 1);
-    auto action3 = createAction(f3, context, param, param2, param3);
-    
-    // dispatch action with 2 parameter
-    auto newContext3 = action3(context);
-
-    // expect => Hello World John Smith
-    ss.str("");
-    std::copy((*newContext3).begin(), (*newContext3).end(), std::ostream_iterator<std::string>(ss, " "));
-    cout << ss.str() << endl;
-    
-    // console should display:
-    // Hello World
-    // Hello World John
-    // Hello World John Smith    
-  }
-```
-###Use durian to write code your coworkers can read
-What will your code look like?
-```cpp
-  template<typename socketType>
-  class client : public durian::client<socketType>
-  // . . .
-  std::map<string, string> customHeaders = { { "Content-Type", "text/xml" } };
-  client<SimpleWeb::HTTP> simpleClient("vendorHost:8080", "/someService", "user", "password", customHeaders);
-  // get result
-  auto resp = simpleClient.GetData("1234");
-
-  // same API for another vendor
-  std::map<string, string> customHeaders = { { "Content-Type", "application/json" } };
-  // use SSL
-  client<SimpleWeb::HTTPS> simpleClient("anotherVendorHost:8080", "/someService", "user", "password", customHeaders);
-  // get result
-  auto resp = simpleClient.GetOtherData("1234");
-```
-
+<a name="parallel-processing"></a>
 ###Use durian with parallel processing
 This example uses the global ```::parallel_for_each``` function in durian to make parallel calls to google search.
 ```cpp
@@ -275,4 +278,23 @@ This example uses the global ```::parallel_for_each``` function in durian to mak
     }
     return 0;
   }
+```
+<a name="readability"></a>
+####Use durian to write code your coworkers can read
+What will your code look like?
+```cpp
+  template<typename socketType>
+  class client : public durian::client<socketType>
+  // . . .
+  std::map<string, string> customHeaders = { { "Content-Type", "text/xml" } };
+  client<SimpleWeb::HTTP> simpleClient("vendorHost:8080", "/someService", "user", "password", customHeaders);
+  // get result
+  auto resp = simpleClient.GetData("1234");
+
+  // same API for another vendor
+  std::map<string, string> customHeaders = { { "Content-Type", "application/json" } };
+  // use SSL
+  client<SimpleWeb::HTTPS> simpleClient("anotherVendorHost:8080", "/someService", "user", "password", customHeaders);
+  // get result
+  auto resp = simpleClient.GetOtherData("1234");
 ```
