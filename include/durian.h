@@ -163,6 +163,8 @@ namespace durian {
       // (*ctx).add(password);
       (*ctx).add("user", userstr);
       (*ctx).add("password", passwordstr);
+      (*ctx).add("host", host);
+      (*ctx).add("servicePath", servicePath);
     }
     ~client<socketType>(){}
     client() = default;
