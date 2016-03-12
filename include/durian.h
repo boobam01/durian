@@ -16,6 +16,7 @@
 #include "boost/date_time/posix_time/posix_time.hpp"
 #include "compose.h"
 #include "actions.h"
+#include <type_traits>
 
 using namespace std;
 
@@ -157,14 +158,14 @@ namespace durian {
       ctx = make_shared<Plustache::Context>();
 
       // store user & password in the context
-      // user["user"] = userstr;
-      // password["password"] = passwordstr;
-      // (*ctx).add(user);
-      // (*ctx).add(password);
       (*ctx).add("user", userstr);
       (*ctx).add("password", passwordstr);
       (*ctx).add("host", host);
       (*ctx).add("servicePath", servicePath);
+      (*ctx).add("customHeaders", customHeaders);
+
+      //store the template type in the context
+      (*ctx).add("socketType", std::is_same<socketType, SimpleWeb::HTTP>::value ? "HTTP" : "HTTPS");
     }
     ~client<socketType>(){}
     client() = default;
