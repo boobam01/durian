@@ -151,7 +151,7 @@ namespace durian {
       std::map<string, string>& _customHeaders) : host(_host), servicePath(_servicePath), userstr(_user), passwordstr(_password), customHeaders(_customHeaders) {
 
       // create api::client<socketType>
-      apiClient = make_unique<api::client<SimpleWeb::HTTP>>(host);
+      apiClient = make_unique<api::client<socketType>(host);
 
       // create the context that will be shared by all templates
       ctx = make_shared<Plustache::Context>();
