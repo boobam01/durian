@@ -286,12 +286,12 @@ namespace durian {
     free(arr);
   }
 
-  static void createContextFromJson(const char* rawJson, PlustacheTypes::CollectionType& list, const string selector, shared_ptr<Plustache::Context> ctx) {
+  static void createContextFromJson(const char* rawJson, const PlustacheTypes::CollectionType list, const string selector, shared_ptr<Plustache::Context> ctx) {
 
     struct json_token *arr, *tok;
     
     arr = parse_json2(rawJson, strlen(rawJson));
-    for (auto& t : list){
+    for (auto t : list){
       auto e = t[selector];
       //is this an array?
       string err;

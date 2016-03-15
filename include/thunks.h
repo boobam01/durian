@@ -6,8 +6,8 @@ namespace {
   
   template <typename F, typename CTX, typename... PARAMS>
   std::function<CTX(CTX)> createThunk(const F f_, CTX& x, PARAMS... p) {
-    return [=, &x](CTX&)->CTX {
-      f_(x, &p...);
+    return [&, p...](CTX&)->CTX {
+      f_(x, p...);
       return x;
     };
   }
