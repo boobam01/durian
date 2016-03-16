@@ -50,7 +50,7 @@ namespace api {
         (*_server)->resource[r.expression][r.verb] = r.action;
       });
       //default
-      (*_server)->default_resource["GET"] = [](SimpleWeb::ServerBase<T>::Reponse& response, shared_ptr<SimpleWeb::ServerBase<T>::Request>> request) {
+      (*_server)->default_resource["GET"] = [](SimpleWeb::ServerBase<T>::Response& response, shared_ptr<SimpleWeb::ServerBase<T>::Request>> request) {
         response << "HTTP/1.1 200 OK\r\nContent-Length: " << 0 << "\r\n\r\n";
       };
     }
