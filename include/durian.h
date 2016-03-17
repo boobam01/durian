@@ -208,7 +208,7 @@ namespace durian {
 
     // should override config file
     virtual void loadConfig(char* filename) {}
-
+    
   protected:
     shared_ptr<Plustache::Context> ctx;
     durian::generator<XmlElement::Message> generator;
@@ -266,13 +266,20 @@ namespace durian {
     dumpFile(outname.c_str(), resp->get(key).front()[key].c_str());
   }
 
-  static void addToLog(shared_ptr<Plustache::Context> resp, char* key) {
+  static void addToLog(const string MODULE, shared_ptr<Plustache::Context> resp, char* key) {
     auto logger = spdlog::get("logger");
     if (!logger) {
       cout << "Client did not create a logger!" << endl;
       return;
     }
-    logger->info() << key << " => " << resp->get(key).front()[key];
+    logger->info() << "[" << MODULE << "] " << key << " => " << resp->get(key).front()[key];
+  }
+
+  static void flushLog() {
+    auto logger = spdlog::get("logger");
+    if (logger) {
+      logger->flush();
+    }
   }
 
   static void createContextFromJson(const char* rawJson, std::list<const char*>& selectors, shared_ptr<Plustache::Context> ctx) {
@@ -338,7 +345,7 @@ namespace durian {
     return ss.str();
   }
 
-  static void setupLogging (const string logName) {
+  static void setupLogging(const string logName) {
 
     if (boost::filesystem::create_directory("./log")){
       boost::filesystem::path full_path(boost::filesystem::current_path());
@@ -356,7 +363,6 @@ namespace durian {
     auto combined_logger = std::make_shared<spdlog::logger>("logger", begin(sinks), end(sinks));
     combined_logger->set_pattern("[%Y-%d-%m %H:%M:%S:%e] [%l] [thread %t] %v");
     spdlog::register_logger(combined_logger);
-
   }
 
 }
