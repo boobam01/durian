@@ -20,9 +20,8 @@ namespace api {
   template<typename T>
   class server {
   public:
-    server<T>(int _port, int _threads, vector<Route<T>>& routes) : port(_port), threads(_threads) {
+    server<T>(int _port, int _threads) : port(_port), threads(_threads) {
       _server = make_shared<SimpleWeb::Server<T>>(port, threads);
-      connect(routes);
     }
     server<T>(int _port, int _threads, const string _certFile, const string _privateKeyFile) : port(_port), threads(_threads), certFile(_certFile), privateKeyFile(_privateKeyFile) {
       if (std::is_same<T, SimpleWeb::HTTP>) {
@@ -31,18 +30,9 @@ namespace api {
       else {
         _server = make_shared<SimpleWeb::Server<T>>(port, threads, sertFile, privateKeyFile);
       }
-      connect(routes);
     }
-    void start() {
-      _server->start();
-    }
-  private:
-    int port, threads;
-    std::string certFile, privateKeyFile;
-    shared_ptr<SimpleWeb::Server<T>> _server;
-    
-    void connect(vector<Route<T>>& routes) {
-      std::for_each(routes.begin(), routes.end(), [this](const Route<T>& r){
+    void makeRoutes(vector<Route<T>>& routes) {
+      std::for_each(routes.begin(), routes.end(), [&](const Route<T>& r){
         _server->resource[r.expression][r.verb] = r.action;
       });
       //default
@@ -50,6 +40,14 @@ namespace api {
         response << "HTTP/1.1 200 OK\r\nContent-Length: " << 0 << "\r\n\r\n";
       };
     }
+    void start() {
+      _server->start();
+    }    
+  private:
+    int port, threads;
+    std::string certFile, privateKeyFile, socketType;
+    shared_ptr<SimpleWeb::Server<T>> _server;
+    vector<Route<T>> routes;
   };
 }
 
