@@ -84,21 +84,21 @@ This is an example of invoking a SOAP thunk.
   {
     typedef shared_ptr<std::vector<string>> CONTEXT;
     
-    auto f = [](CONTEXT v, const string* t)->CONTEXT {
-      (*v).push_back(*t);
+    auto f = [](CONTEXT v, string t)->CONTEXT {
+      (*v).push_back(t);
       return v;
     };
 
-    auto f2 = [](CONTEXT v, const string* t, const string* t2)->CONTEXT {
-      (*v).push_back(*t);
-      (*v).push_back(*t2);
+    auto f2 = [](CONTEXT v, string t, const string t2)->CONTEXT {
+      (*v).push_back(t);
+      (*v).push_back(t2);
       return v;
     };
 
-    auto f3 = [](CONTEXT v, const string* t, const string* t2, const string* t3)->CONTEXT {
-      (*v).push_back(*t);
-      (*v).push_back(*t2);
-      (*v).push_back(*t3);
+    auto f3 = [](CONTEXT v, string t, string t2, const string t3)->CONTEXT {
+      (*v).push_back(t);
+      (*v).push_back(t2);
+      (*v).push_back(t3);
       return v;
     };
 
@@ -111,12 +111,12 @@ This is an example of invoking a SOAP thunk.
 
     // test 1 parameter argument
     // returns a function f(context, param...)
-    auto thunk = createThunk(f, context, param);
+    auto action = createThunk(f, context, param);
     
-    // execute thunk with 1 parameter
-    auto newContext = thunk(context);
+    // dispatch action with 1 parameter
+    auto newContext = action(context);
 
-    // auto newContext = thunk(context);
+    // auto newContext = action(context);
 
     // expect => Hello World
     std::copy((*newContext).begin(), (*newContext).end(), std::ostream_iterator<std::string>(ss, " "));
@@ -125,10 +125,10 @@ This is an example of invoking a SOAP thunk.
     // test 2 parameter arguments
     // returns a function f(context, param...)
     (*context).erase((*context).begin() + 1);
-    auto thunk2 = createThunk(f2, context, param, param2);
+    auto action2 = createThunk(f2, context, param, param2);
     
-    // execute thunk with 2 parameter
-    auto newContext2 = thunk2(context);
+    // dispatch action with 2 parameter
+    auto newContext2 = action2(context);
     
     // expect => Hello World John
     ss.str("");
@@ -138,10 +138,10 @@ This is an example of invoking a SOAP thunk.
     // test 3 parameter arguments
     // returns a function f(context, param...)
     (*context).erase((*context).begin() + 1);
-    auto thunk3 = createThunk(f3, context, param, param2, param3);
+    auto action3 = createThunk(f3, context, param, param2, param3);
     
-    // execute thunk with 2 parameter
-    auto newContext3 = thunk3(context);
+    // dispatch action with 2 parameter
+    auto newContext3 = action3(context);
 
     // expect => Hello World John Smith
     ss.str("");
@@ -173,24 +173,24 @@ Here's a contrived example
     // so we're going to use deque, not vector, because we're inserting in the front
     typedef shared_ptr<std::deque<string>> TODOS;
 
-    auto EAT = [](TODOS v, const char* const* t)->TODOS {
-      (*v).push_front("eat " + string(*t));
+    auto EAT = [](TODOS v, const char* t)->TODOS {
+      (*v).push_front("eat " + string(t));
       return v;
     };
 
-    auto SLEEP = [](TODOS v, const char* const* t)->TODOS {
-      (*v).push_front("sleep " + string(*t));
+    auto SLEEP = [](TODOS v, const char*t)->TODOS {
+      (*v).push_front("sleep " + string(t));
       return v;
     };
 
-    auto PROGRAM = [](TODOS v, const char* const* t)->TODOS {      
-      (*v).push_front("program " + string(*t));
+    auto PROGRAM = [](TODOS v, const char* t)->TODOS {      
+      (*v).push_front("program " + string(t));
       return v;
     };
 
-    auto PROGRAM2 = [](TODOS v, const char* const* t, const char*const* u)->TODOS {
-      (*v).push_front("program " + string(*t));
-      (*v).push_front("program " + string(*u));
+    auto PROGRAM2 = [](TODOS v, const char* t, const char* u)->TODOS {
+      (*v).push_front("program " + string(t));
+      (*v).push_front("program " + string(u));
       return v;
     };
 
