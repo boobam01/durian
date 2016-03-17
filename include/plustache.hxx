@@ -39,7 +39,15 @@ namespace Plustache {
 	    int add(const PlustacheTypes::ObjectType& o);
 	    PlustacheTypes::CollectionType get(const std::string& key) const;
       int remove(const std::string& key) { ctx.erase(key); return 0; }
-      void clear() { ctx.clear(); }
+      void clear(std::unordered_map<string, int>& whitelist) { 
+        vector<string> toDelete;
+        for (auto& e : ctx) { 
+          if (!whitelist[e.first]) {
+            toDelete.emplace_back(e.first);
+          }
+        }
+        for (auto& k : toDelete) { ctx.erase(k); }
+      }
 
 	private:
 	    /* data */

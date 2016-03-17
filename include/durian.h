@@ -208,6 +208,15 @@ namespace durian {
 
     // should override config file
     virtual void loadConfig(char* filename) {}
+
+    shared_ptr<Plustache::Context> getContext() {
+      return this->ctx;
+    }
+
+    void clearContext() {
+      std::unordered_map<string, int> whitelist = { {"user", 1}, {"password", 1}, {"host", 1}, {"servicePath", 1}, {"customHeaders",1}, {"socketType", 1} };
+      this->ctx->clear(whitelist);
+    }
         
   protected:
     shared_ptr<Plustache::Context> ctx;
