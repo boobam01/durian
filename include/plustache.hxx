@@ -39,6 +39,7 @@ namespace Plustache {
 	    int add(const PlustacheTypes::ObjectType& o);
 	    PlustacheTypes::CollectionType get(const std::string& key) const;
       int remove(const std::string& key) { ctx.erase(key); return 0; }
+      void clear() { ctx.clear(); }
 
 	private:
 	    /* data */

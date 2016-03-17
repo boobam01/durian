@@ -208,7 +208,7 @@ namespace durian {
 
     // should override config file
     virtual void loadConfig(char* filename) {}
-    
+        
   protected:
     shared_ptr<Plustache::Context> ctx;
     durian::generator<XmlElement::Message> generator;
