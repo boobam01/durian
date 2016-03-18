@@ -206,10 +206,10 @@ namespace durian {
     }
 
     // should override mapping file
-    virtual int loadMapping(char* filename) {}
+    virtual int loadMapping(const char* filename) { return 0; }
 
     // should override config file
-    virtual int loadConfig(char* filename) {}
+    virtual int loadConfig(const char* filename) { return 0; }
 
     shared_ptr<Plustache::Context> getContext() {
       return this->ctx;
