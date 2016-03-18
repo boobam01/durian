@@ -11,6 +11,8 @@ Global
 		Debug_Lib|x64 = Debug_Lib|x64
 		Debug|Win32 = Debug|Win32
 		Debug|x64 = Debug|x64
+		Release_Lib|Win32 = Release_Lib|Win32
+		Release_Lib|x64 = Release_Lib|x64
 		Release|Win32 = Release|Win32
 		Release|x64 = Release|x64
 	EndGlobalSection
@@ -23,6 +25,10 @@ Global
 		{890E5BA8-972F-4BA6-93CC-EEFE57944720}.Debug|Win32.Build.0 = Debug|Win32
 		{890E5BA8-972F-4BA6-93CC-EEFE57944720}.Debug|x64.ActiveCfg = Debug|x64
 		{890E5BA8-972F-4BA6-93CC-EEFE57944720}.Debug|x64.Build.0 = Debug|x64
+		{890E5BA8-972F-4BA6-93CC-EEFE57944720}.Release_Lib|Win32.ActiveCfg = Release_Lib|Win32
+		{890E5BA8-972F-4BA6-93CC-EEFE57944720}.Release_Lib|Win32.Build.0 = Release_Lib|Win32
+		{890E5BA8-972F-4BA6-93CC-EEFE57944720}.Release_Lib|x64.ActiveCfg = Debug_Lib|x64
+		{890E5BA8-972F-4BA6-93CC-EEFE57944720}.Release_Lib|x64.Build.0 = Debug_Lib|x64
 		{890E5BA8-972F-4BA6-93CC-EEFE57944720}.Release|Win32.ActiveCfg = Release|Win32
 		{890E5BA8-972F-4BA6-93CC-EEFE57944720}.Release|Win32.Build.0 = Release|Win32
 		{890E5BA8-972F-4BA6-93CC-EEFE57944720}.Release|x64.ActiveCfg = Release|x64

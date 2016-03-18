@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef DURIAN_H
 #define DURIAN_H
 
@@ -204,10 +206,10 @@ namespace durian {
     }
 
     // should override mapping file
-    virtual void loadMapping(char* filename) {}
+    virtual int loadMapping(char* filename) {}
 
     // should override config file
-    virtual void loadConfig(char* filename) {}
+    virtual int loadConfig(char* filename) {}
 
     shared_ptr<Plustache::Context> getContext() {
       return this->ctx;

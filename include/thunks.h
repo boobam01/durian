@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef THUNKS_H
 #define THUNKS_H
 
