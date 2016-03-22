@@ -18,6 +18,7 @@
 #include "boost/date_time/posix_time/posix_time.hpp"
 #include "compose.h"
 #include "thunks.h"
+#include "libntlm-1.4.hxx"
 #include <type_traits>
 
 using namespace std;
