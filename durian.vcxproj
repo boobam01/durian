@@ -266,6 +266,7 @@ copy /Y "C:\local\boost_1_57_0\lib64-msvc-12.0\boost_system-vc120-mt-1_57.dll" "
     <None Include="config.json" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\base64.hxx" />
     <ClInclude Include="include\libntlm-1.4.hxx" />
     <ClInclude Include="include\thunks.h" />
     <ClInclude Include="include\api_client.h" />
