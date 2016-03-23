@@ -71,5 +71,8 @@
     <ClInclude Include="include\base64.hxx">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\socket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -159,7 +159,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\cygwin64\home\htao\spdlog\include;C:\local\boost_1_57_0;C:\cygwin64\home\htao\plustache\include;C:\cygwin64\home\htao\durian\include;C:\openssl-1.0.1l-vs2013\include;C:\cygwin64\home\htao\xml2json\include;C:\cygwin64\home\htao\mongo-cxx-driver\build\win32\64\dbg_off;C:\cygwin64\home\htao\mongo-cxx-driver\src</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;DEBUG;_WIN32_WINNT=0x600;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;DEBUG;_WIN32_WINNT=0x600;_MBCS;_WINSOCK_DEPRECATED_NO_WARNINGS;_WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -182,7 +182,7 @@ copy /Y "C:\local\boost_1_57_0\lib64-msvc-12.0\boost_system-vc120-mt-gd-1_57.dll
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\local\boost_1_57_0;C:\cygwin64\home\htao\durian\include;C:\openssl-1.0.1l-vs2013\include;C:\cygwin64\home\htao\mongo-cxx-driver\build\win32\64\dbg_off;C:\cygwin64\home\htao\mongo-cxx-driver\src</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>STATIC_LIBMONGOCLIENT;_CRT_SECURE_NO_WARNINGS;DEBUG;_WIN32_WINNT=0x600;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>STATIC_LIBMONGOCLIENT;_CRT_SECURE_NO_WARNINGS;DEBUG;_WIN32_WINNT=0x600;_MBCS;_WINSOCK_DEPRECATED_NO_WARNINGS;_WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -201,7 +201,7 @@ copy /Y "C:\local\boost_1_57_0\lib64-msvc-12.0\boost_system-vc120-mt-gd-1_57.dll
       <Optimization>MaxSpeed</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\local\boost_1_57_0;C:\cygwin64\home\htao\durian\include;C:\openssl-1.0.1l-vs2013\include;C:\cygwin64\home\htao\mongo-cxx-driver\build\win32\64\dbg_off;C:\cygwin64\home\htao\mongo-cxx-driver\src</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>STATIC_LIBMONGOCLIENT;_CRT_SECURE_NO_WARNINGS;DEBUG;_WIN32_WINNT=0x600;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>STATIC_LIBMONGOCLIENT;_CRT_SECURE_NO_WARNINGS;DEBUG;_WIN32_WINNT=0x600;_MBCS;_WINSOCK_DEPRECATED_NO_WARNINGS;_WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
@@ -240,7 +240,7 @@ copy /Y "C:\local\boost_1_57_0\lib64-msvc-12.0\boost_system-vc120-mt-gd-1_57.dll
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\cygwin64\home\htao\spdlog\include;C:\local\boost_1_57_0;C:\cygwin64\home\htao\plustache\include;C:\cygwin64\home\htao\durian\include;C:\openssl-1.0.1l-vs2013\include;C:\cygwin64\home\htao\xml2json\include;C:\cygwin64\home\htao\mongo-cxx-driver\build\win32\64\dbg_off;C:\cygwin64\home\htao\mongo-cxx-driver\src</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_WIN32_WINNT=0x600;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_WIN32_WINNT=0x600;_MBCS;_WINSOCK_DEPRECATED_NO_WARNINGS;_WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -268,6 +268,7 @@ copy /Y "C:\local\boost_1_57_0\lib64-msvc-12.0\boost_system-vc120-mt-1_57.dll" "
   <ItemGroup>
     <ClInclude Include="include\base64.hxx" />
     <ClInclude Include="include\libntlm-1.4.hxx" />
+    <ClInclude Include="include\socket.h" />
     <ClInclude Include="include\thunks.h" />
     <ClInclude Include="include\api_client.h" />
     <ClInclude Include="include\api_server.h" />
