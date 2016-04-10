@@ -100,7 +100,7 @@ createAction(Func, Action, Params...)->Func2
 // where Func2 is (Action&)->Action
 ```
 
-But why all the fuss?
+####But why all the fuss?
 
 The whole point of action creators is to create simple functions that will process some finite data before handling off to the next function.
 
