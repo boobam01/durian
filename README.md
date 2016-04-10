@@ -93,6 +93,7 @@ auto f = [](shared_ptr<T>, Params...)->shared_ptr<T>
 ```
 
 Second, pass your function and arguments to the *_creationAction_*  function
+
 The ```createAction``` will return basically a copy of your function with a new signature for later execution.
 ```cpp
 createAction(Func, Action, Params...)->Func2
@@ -100,7 +101,9 @@ createAction(Func, Action, Params...)->Func2
 ```
 
 But why all the fuss?
+
 The whole point of action creators is to create simple functions that will process some finite data before handling off to the next function.
+
 Each function is expected to take as its argument the result of a previous function
 ```
 let v = f(g(h(x)))
