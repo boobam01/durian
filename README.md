@@ -1,3 +1,4 @@
+<a name=""></a>
 # durian
 
 The fourth of many fruits.  Stinky. :stuck_out_tongue_closed_eyes:
@@ -10,14 +11,13 @@ If you compile in linux or Mac, use [Facebook folly](https://github.com/facebook
   - [Promises](#promises)
     - [SOAP](#soap-promise-example)
     - [MongoDB](#mongodb-promise-example)
-  - [Thunks](#thunks)
+  - [Action](#action)
+  - [Action Creators](#action-creators)
   - [Higher-order Functions](#higher-order-functions)
     - [Composition](#composition)
     - [Flow](#flow)
   - [Parallel Processing](#parallel-processing)
   - [Readability](#readability)
-
-<a name=""></a>
 
 <a name="promises"></a>
 ###Promises
@@ -76,82 +76,105 @@ This is an example of invoking a SOAP thunk.
     return 0;
   }
 ```
-<a name="thunks"></a>
-###Thunks
-####Use durian with thunks _(delayed execution by invoking a function that returns a function, you are responsible for invoking the returned function)_
+<a name="action"></a>
+###Action
+####With durian, an _action_ is a finite amount of data is defined simply as ```std::shared_ptr<T>```
+
+<a name="action-creators"></a>
+###Action Creators
+####With durian, _actions_ are created in 2 steps
+First, create a lambda with the follwing signature
 ```cpp
-  // test thunks
+auto f = [](shared_ptr<T>, Params...)->shared_ptr<T>
+// where Params... is 0 or more arguments 
+```
+
+Second, pass your function and arguments to the *_creationAction_*  function
+The ```createAction``` will return basically a copy of your function with a new signature for later execution.
+```cpp
+createAction(Func, Action, Params...)->Func2
+// where Func2 is (Action&)->Action
+```
+
+But why all the fuss?
+The whole point of action creators is to create simple functions that will process some finite data before handling off to the next function.
+Each function is expected to take as its argument the result of a previous function
+```
+let v = f(g(h(x)))
+```
+
+```cpp
+  // Example:
+  // test actions
   {
-    typedef shared_ptr<std::vector<string>> CONTEXT;
-    
-    auto f = [](CONTEXT v, string t)->CONTEXT {
-      (*v).push_back(t);
-      return v;
-    };
+  typedef shared_ptr<std::vector<string>> CONTEXT;
 
-    auto f2 = [](CONTEXT v, string t, const string t2)->CONTEXT {
-      (*v).push_back(t);
-      (*v).push_back(t2);
-      return v;
-    };
+  auto f = [](CONTEXT v, string t)->CONTEXT {
+  (*v).push_back(t);
+  return v;
+  };
 
-    auto f3 = [](CONTEXT v, string t, string t2, const string t3)->CONTEXT {
-      (*v).push_back(t);
-      (*v).push_back(t2);
-      (*v).push_back(t3);
-      return v;
-    };
+  auto f2 = [](CONTEXT v, string t, const string t2)->CONTEXT {
+  (*v).push_back(t);
+  (*v).push_back(t2);
+  return v;
+  };
 
-    CONTEXT context = make_shared<std::vector<string>>();
-    *context = { "Hello" };
-    string param("World");
-    string param2("John");
-    string param3("Smith");
-    std::ostringstream ss;
+  auto f3 = [](CONTEXT v, string t, string t2, const string t3)->CONTEXT {
+  (*v).push_back(t);
+  (*v).push_back(t2);
+  (*v).push_back(t3);
+  return v;
+  };
 
-    // test 1 parameter argument
-    // returns a function f(context, param...)
-    auto action = createThunk(f, context, param);
-    
-    // dispatch action with 1 parameter
-    auto newContext = action(context);
+  CONTEXT context = make_shared<std::vector<string>>();
+  *context = { "Hello" };
+  string param("World");
+  string param2("John");
+  string param3("Smith");
+  std::ostringstream ss;
 
-    // auto newContext = action(context);
+  // test 1 parameter argument
+  // returns a function f(context, param...)
+  auto action = createAction(f, context, param);
 
-    // expect => Hello World
-    std::copy((*newContext).begin(), (*newContext).end(), std::ostream_iterator<std::string>(ss, " "));
-    cout << ss.str() << endl;
+  // dispatch action with 1 parameter
+  auto newContext = action(context);
 
-    // test 2 parameter arguments
-    // returns a function f(context, param...)
-    (*context).erase((*context).begin() + 1);
-    auto action2 = createThunk(f2, context, param, param2);
-    
-    // dispatch action with 2 parameter
-    auto newContext2 = action2(context);
-    
-    // expect => Hello World John
-    ss.str("");
-    std::copy((*newContext2).begin(), (*newContext2).end(), std::ostream_iterator<std::string>(ss, " "));
-    cout << ss.str() << endl;
+  // expect => Hello World
+  std::copy((*newContext).begin(), (*newContext).end(), std::ostream_iterator<std::string>(ss, " "));
+  cout << ss.str() << endl;
 
-    // test 3 parameter arguments
-    // returns a function f(context, param...)
-    (*context).erase((*context).begin() + 1);
-    auto action3 = createThunk(f3, context, param, param2, param3);
-    
-    // dispatch action with 2 parameter
-    auto newContext3 = action3(context);
+  // test 2 parameter arguments
+  // returns a function f(context, param...)
+  (*context).erase((*context).begin() + 1);
+  auto action2 = createAction(f2, context, param, param2);
 
-    // expect => Hello World John Smith
-    ss.str("");
-    std::copy((*newContext3).begin(), (*newContext3).end(), std::ostream_iterator<std::string>(ss, " "));
-    cout << ss.str() << endl;
-    
-    // console should display:
-    // Hello World
-    // Hello World John
-    // Hello World John Smith    
+  // dispatch action with 2 parameter
+  auto newContext2 = action2(context);
+
+  // expect => Hello World John
+  ss.str("");
+  std::copy((*newContext2).begin(), (*newContext2).end(), std::ostream_iterator<std::string>(ss, " "));
+  cout << ss.str() << endl;
+
+  // test 3 parameter arguments
+  // returns a function f(context, param...)
+  (*context).erase((*context).begin() + 1);
+  auto action3 = createAction(f3, context, param, param2, param3);
+
+  // dispatch action with 3 parameter
+  auto newContext3 = action3(context);
+
+  // expect => Hello World John Smith
+  ss.str("");
+  std::copy((*newContext3).begin(), (*newContext3).end(), std::ostream_iterator<std::string>(ss, " "));
+  cout << ss.str() << endl;
+
+  // console should display:
+  // Hello World
+  // Hello World John
+  // Hello World John Smith
   }
 ```
 <a name="higher-order-functions"></a>
@@ -196,24 +219,24 @@ Here's a contrived example
 
     TODOS todos = make_shared<std::deque<string>>();
 
-    auto eatThunk = createThunk(EAT, todos, "cheese");
-    auto sleepThunk = createThunk(SLEEP, todos, "4 hours");
-    auto programThunk = createThunk(PROGRAM, todos, "javascript");
+    auto eatAction = createAction(EAT, todos, "cheese");
+    auto sleepAction = createAction(SLEEP, todos, "4 hours");
+    auto programAction = createAction(PROGRAM, todos, "javascript");
     
     // on Monday, you may have a routine like this and does it in sequence
     // result => ["eat cheese", "sleep 4 hours", "program javascript"]
-    auto MONDAY = compose(eatThunk, programThunk, sleepThunk)(todos);
+    auto MONDAY = compose(eatAction, programAction, sleepAction)(todos);
 
     (*todos).clear();
     // on Tuesday, maybe you like to start your day programming
     // result => ["program javascript", "sleep 4 hours", "eat cheese"]
-    auto TUESDAY = compose(programThunk, sleepThunk, eatThunk)(todos);
+    auto TUESDAY = compose(programAction, sleepAction, eatAction)(todos);
 
     (*todos).clear();
     // on Wednesday, maybe you wanna do some C++ and SASS, but you still have to eat and sleep
     // result => ["program SASS", "program C++", "eat cheese", "sleep 4 hours"]
-    auto programThunk2 = createThunk(PROGRAM2, todos, "C++", "SASS");
-    auto WEDNESDAY = compose(programThunk2, eatThunk, sleepThunk)(todos);
+    auto programAction2 = createAction(PROGRAM2, todos, "C++", "SASS");
+    auto WEDNESDAY = compose(programAction2, eatAction, sleepAction)(todos);
   }
 ```
 <a name="flow"></a>

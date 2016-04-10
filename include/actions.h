@@ -1,13 +1,13 @@
 #pragma once
 
-#ifndef THUNKS_H
-#define THUNKS_H
+#ifndef ACTIONS_H
+#define ACTIONS_H
 
 #include <iostream>
 namespace {
   
   template <typename F, typename CTX, typename... PARAMS>
-  std::function<CTX(CTX)> createThunk(const F f_, CTX& x, PARAMS... p) {
+  std::function<CTX(CTX)> createAction(const F f_, CTX& x, PARAMS... p) {
     return [&, p...](CTX&)->CTX {
       f_(x, p...);
       return x;
@@ -21,7 +21,7 @@ namespace {
 /*
 // Example:
 
-// test thunks
+// test actions
 {
 typedef shared_ptr<std::vector<string>> CONTEXT;
 
@@ -52,12 +52,10 @@ std::ostringstream ss;
 
 // test 1 parameter argument
 // returns a function f(context, param...)
-auto action = createThunk(f, context, param);
+auto action = createAction(f, context, param);
 
 // dispatch action with 1 parameter
 auto newContext = action(context);
-
-// auto newContext = action(context);
 
 // expect => Hello World
 std::copy((*newContext).begin(), (*newContext).end(), std::ostream_iterator<std::string>(ss, " "));
@@ -66,7 +64,7 @@ cout << ss.str() << endl;
 // test 2 parameter arguments
 // returns a function f(context, param...)
 (*context).erase((*context).begin() + 1);
-auto action2 = createThunk(f2, context, param, param2);
+auto action2 = createAction(f2, context, param, param2);
 
 // dispatch action with 2 parameter
 auto newContext2 = action2(context);
@@ -79,9 +77,9 @@ cout << ss.str() << endl;
 // test 3 parameter arguments
 // returns a function f(context, param...)
 (*context).erase((*context).begin() + 1);
-auto action3 = createThunk(f3, context, param, param2, param3);
+auto action3 = createAction(f3, context, param, param2, param3);
 
-// dispatch action with 2 parameter
+// dispatch action with 3 parameter
 auto newContext3 = action3(context);
 
 // expect => Hello World John Smith
