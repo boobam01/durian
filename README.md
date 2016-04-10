@@ -78,7 +78,10 @@ This is an example of invoking a SOAP thunk.
 ```
 <a name="action"></a>
 ###Action
-####With durian, an _action_ is a finite amount of data is defined simply as ```std::shared_ptr<T>```
+####With durian, an _action_ is a finite amount of data is defined simply as
+```cpp
+std::shared_ptr<T>
+```
 
 <a name="action-creators"></a>
 ###Action Creators
