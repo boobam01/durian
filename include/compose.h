@@ -4,92 +4,93 @@
 #define COMPOSE_H
 
 #include <iostream>
-#include <tuple>
 
-namespace {
+namespace
+{
   /*
     Author: http://stackoverflow.com/users/1670129/igor-tandetnik
     Source: http://stackoverflow.com/questions/19071268/function-composition-in-c-c11/27727236#27727236
     http://stackoverflow.com/questions/15904288/how-to-reverse-the-order-of-arguments-of-a-variadic-template-function
     */
-  template <typename F0, typename... F>
-  class Composer2 {
-    F0 f0_;
-    Composer2<F...> tail_;
-  public:
-    Composer2(F0 f0, F... f) : f0_(f0), tail_(f...) {}
 
-    template <typename T>
-    T operator() (const T& x) const {
-      return f0_(tail_(x));
-    }
-  };
+	using namespace std;
 
-  template <typename F>
-  class Composer2 <F> {
-    F f_;
-  public:
-    Composer2(F f) : f_(f) {}
+	template <typename F0, typename... F>
+	class Composer {
+		F0 f0_;
+		Composer<F...> tail_;
+	public:
+		Composer(F0 f0, F... f) : f0_(f0), tail_(f...) {}
 
-    template <typename T>
-    T operator() (const T& x) const {
-      return f_(x);
-    }
-  };
+		template <typename T>
+		T operator() (const T& x) const {
+			return f0_(tail_(x));
+		}
+	};
 
-  template <typename... F>
-  Composer2<F...> compose(F... f) {
-    return Composer2<F...>(f...);
-  }
-  
-  // flow
-  // reversed indices...
-  template<unsigned... Is> struct seq{ using type = seq; };
+	template <typename F>
+	class Composer <F> {
+		F f_;
+	public:
+		Composer(F f) : f_(f) {}
 
-  template<unsigned I, unsigned... Is>
-  struct rgen_seq : rgen_seq<I - 1, Is..., I - 1>{};
+		template <typename T>
+		T operator() (const T& x) const {
+			return f_(x);
+		}
+	};
 
-  template<unsigned... Is>
-  struct rgen_seq<0, Is...> : seq<Is...>{};
+	template <typename... F>
+	Composer<F...> compose(F... f) {
+		return Composer<F...>(f...);
+	}
 
-  template<typename CTX>
-  struct flow {
-    CTX ctx;
-    flow(CTX _ctx) { ctx = _ctx; }
-    
-    template<class Tup, unsigned... Is>
-    CTX revertHelper(Tup&& t, seq<Is...>) {
-      return compose(std::get<Is>(std::forward<Tup>(t))...)(ctx);
-    }
+	template <typename F0, typename... F>
+	class Flow {
+		F0 f0_;
+		Flow<F...> tail_;
+	public:
+		Flow(F0 f0, F... f) : f0_(f0), tail_(f...) {}
 
-    template <typename... F>
-    CTX operator() (F... f) {
-      auto t = std::forward_as_tuple(std::forward<F>(f)...);
-      return revertHelper(t, rgen_seq<sizeof...(F)>{});
-    }
-  };
+		template <typename T>
+		T operator() (const T& x) const {
+			return tail_(f0_(x));
+		}
+	};
 
-  /*
-  int f(int x) { return x + 1; }
-  int g(int x) { return x * 2; }
-  int h(int x) { return x - 1; }
+	template <typename F>
+	class Flow <F> {
+		F f_;
+	public:
+		Flow(F f) : f_(f) {}
 
-  int main() {
-    // compose
-    // f(g(h(42))) right to left
-    // result is 83
-    std::cout << compose(f, g, h)(42);
-    
-    // flow
-    // h(g(f(42))) left to right
-    // result is 85
-    flow<int> f1(42);
-    std::cout << f1(f, g, h) << endl;
+		template <typename T>
+		T operator() (const T& x) const {
+			return f_(x);
+		}
+	};
 
-    return 0;
-  }
-  */
+	template <typename... F>
+	Flow<F...> flow(F... f) {
+		return Flow<F...>(f...);
+	}
 
+	// int f(int x) { return x + 1; }
+	// int g(int x) { return x * 2; }
+	// int h(int x) { return x - 1; }
+
+	// int main()
+	// {
+		// cout << "compose(f, g, h)(42) => f(g(h(42)))" << endl;
+		// cout << "expected: 83" << endl;
+		// cout << compose(f, g, h)(42) << endl;
+
+		// cout << "flow(f, g, h)(42) => h(g(f(42)))" << endl;
+		// cout << "expected: 85" << endl;
+		// cout << "result: " << flow(f, g, h)(42) << endl;
+		
+		// return 0;
+	// }
 }
 
 #endif
