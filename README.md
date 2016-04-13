@@ -253,24 +253,20 @@ Here's a contrived example
 For left to right execution, use ```flow``` instead.
 
 ```cpp
-  int f(int x) { return x + 1; }
-  int g(int x) { return x * 2; }
-  int h(int x) { return x - 1; }
+	int f(int x) { return x + 1; }
+	int g(int x) { return x * 2; }
+	int h(int x) { return x - 1; }
 
-  int main() {
-    // compose
-    // f(g(h(42))) right to left
-    // result is 83
-    std::cout << compose(f, g, h)(42);
-    
-    // flow
-    // h(g(f(42))) left to right
-    // result is 85
-    flow<int> f1(42);
-    std::cout << f1(f, g, h) << endl;
+	void run()
+	{
+		cout << "compose(f, g, h)(42) => f(g(h(42)))" << endl;
+		cout << "expected: 83" << endl;
+		cout << compose(f, g, h)(42) << endl;
 
-    return 0;
-  }
+		cout << "flow(f, g, h)(42) => h(g(f(42)))" << endl;
+		cout << "expected: 85" << endl;
+		cout << "result: " << flow(f, g, h)(42) << endl;
+	}
 ```
 <a name="parallel-processing"></a>
 ###Use durian with parallel processing
