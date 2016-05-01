@@ -86,7 +86,7 @@ std::shared_ptr<T>
 <a name="action-creators"></a>
 ###Action Creators
 ####With durian, _actions_ are created in 2 steps
-_First_, create a lambda with the follwing signature
+__First, create a lambda__
 ```cpp
 auto f = [](shared_ptr<T>, Params...)->shared_ptr<T>
 ```
@@ -102,7 +102,7 @@ Typically, the state object is a ```shared_ptr<TYPE>```
 The rest of the parameters are what your function will use during execution.  It can be zero or more.
 In your action function, you can interact with the state object.
 
-_Second_, pass your function and arguments to the *_creationAction_*  function
+__Second, pass your function and arguments to the ```creationAction``` function__
 
 __createAction__ has the following signature:
 ```js
