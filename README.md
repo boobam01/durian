@@ -114,7 +114,9 @@ Your action function is expected to have following signature:
 (CONTEXT, PARAMS...) => CONTEXT
 ```
 The first parameter is a state object that will be passed to your function when your function is finally executed.
+
 Typically, the state object is a ```shared_ptr<TYPE>```
+
 The rest of the parameters are what your function will use during execution.  It can be zero or more.
 In your action function, you can interact with the state object.
 
@@ -123,6 +125,7 @@ __createAction__ has the following signature:
 createAction<YOUR_FUNCTION, VALUES...> => (NEW_FUNCTION(CONTEXT) => CONTEXT)
 ```
 __createAction__ takes your action function as its first parameter and the actual values that your function will consume.
+
 __createAction__ returns a new function that takes in a state object and returns that state object  
 
 ```cpp
