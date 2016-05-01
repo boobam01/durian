@@ -4,22 +4,31 @@
 #define ACTIONS_H
 
 #include <iostream>
-namespace {
-  
-  template <typename F, typename CTX, typename... PARAMS>
-  std::function<CTX(CTX)> createAction(const F f_, CTX& x, PARAMS... p) {
-    return [&, p...](CTX&)->CTX {
-      f_(x, p...);
-      return x;
+namespace {  
+  template <typename CTX, typename FUNC, typename... PARAMS>
+  function<const CTX&(const CTX&)> createAction(const FUNC f_, const PARAMS... p) {
+    return[&, p...](const CTX &x)->CTX& {
+      return f_(x, p...);
     };
   }
-
 }
 
 #endif
 
 /*
 // Example:
+
+// Your action function is expected to have following signature:
+// (CONTEXT, PARAMS...) => CONTEXT
+// The first parameter is a state object that will be passed to your function when your function is finally executed.
+// Typically, the state object is a shared_ptr<TYPE>
+// The rest of the parameters are what your function will use during execution.  It can be zero or more.
+// In your action function, you can interact with the state object.
+
+// createAction has the following signature:
+// createAction<YOUR_FUNCTION, VALUES...> => (NEW_FUNCTION(CONTEXT) => CONTEXT)
+// createAction takes your action function as its first parameter and the actual values that your function will consume.
+// createAction returns a new function that takes in a state object and returns that state object  
 
 // test actions
 {
@@ -52,7 +61,7 @@ std::ostringstream ss;
 
 // test 1 parameter argument
 // returns a function f(context, param...)
-auto action = createAction(f, context, param);
+auto action = createAction(f, param);
 
 // dispatch action with 1 parameter
 auto newContext = action(context);
@@ -64,7 +73,7 @@ cout << ss.str() << endl;
 // test 2 parameter arguments
 // returns a function f(context, param...)
 (*context).erase((*context).begin() + 1);
-auto action2 = createAction(f2, context, param, param2);
+auto action2 = createAction(f2, param, param2);
 
 // dispatch action with 2 parameter
 auto newContext2 = action2(context);
@@ -77,7 +86,7 @@ cout << ss.str() << endl;
 // test 3 parameter arguments
 // returns a function f(context, param...)
 (*context).erase((*context).begin() + 1);
-auto action3 = createAction(f3, context, param, param2, param3);
+auto action3 = createAction(f3, param, param2, param3);
 
 // dispatch action with 3 parameter
 auto newContext3 = action3(context);
