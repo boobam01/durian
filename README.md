@@ -86,27 +86,9 @@ std::shared_ptr<T>
 <a name="action-creators"></a>
 ###Action Creators
 ####With durian, _actions_ are created in 2 steps
-First, create a lambda with the follwing signature
+_First_, create a lambda with the follwing signature
 ```cpp
 auto f = [](shared_ptr<T>, Params...)->shared_ptr<T>
-// where Params... is 0 or more arguments 
-```
-
-Second, pass your function and arguments to the *_creationAction_*  function
-
-The ```createAction``` will return basically a copy of your function with a new signature for later execution.
-```cpp
-createAction(Func, Action, Params...)->Func2
-// where Func2 is (Action&)->Action
-```
-
-####But why all the fuss?
-
-The whole point of action creators is to create simple functions that will process some finite data before handling off to the next function.
-
-Each function is expected to take as its argument the result of a previous function
-```
-let v = f(g(h(x)))
 ```
 
 Your action function is expected to have following signature:
@@ -120,6 +102,8 @@ Typically, the state object is a ```shared_ptr<TYPE>```
 The rest of the parameters are what your function will use during execution.  It can be zero or more.
 In your action function, you can interact with the state object.
 
+_Second_, pass your function and arguments to the *_creationAction_*  function
+
 __createAction__ has the following signature:
 ```js
 createAction<YOUR_FUNCTION, VALUES...> => (NEW_FUNCTION(CONTEXT) => CONTEXT)
@@ -127,6 +111,15 @@ createAction<YOUR_FUNCTION, VALUES...> => (NEW_FUNCTION(CONTEXT) => CONTEXT)
 __createAction__ takes your action function as its first parameter and the actual values that your function will consume.
 
 __createAction__ returns a new function that takes in a state object and returns that state object  
+
+####But why all the fuss?
+
+The whole point of action creators is to create simple functions that will process some finite data before handling off to the next function.
+
+Each function is expected to take as its argument the result of a previous function
+```
+let v = f(g(h(x)))
+```
 
 ```cpp
   // Example:
