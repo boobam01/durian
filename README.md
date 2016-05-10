@@ -209,7 +209,7 @@ Here's a contrived example
 ```cpp
   // test composition
   {
-    
+
     // remember, we are composing, so the final results will be LIFO order
     // so we're going to use deque, not vector, because we're inserting in the front
     typedef shared_ptr<std::deque<string>> TODOS;
@@ -224,7 +224,7 @@ Here's a contrived example
       return v;
     };
 
-    auto PROGRAM = [](TODOS v, const char* t)->TODOS {      
+    auto PROGRAM = [](TODOS v, const char* t)->TODOS {
       (*v).push_front("program " + string(t));
       return v;
     };
@@ -236,13 +236,13 @@ Here's a contrived example
     };
 
     TODOS todos = make_shared<std::deque<string>>();
-
-    auto eatAction = createAction(EAT, todos, "cheese");
-    auto sleepAction = createAction(SLEEP, todos, "4 hours");
-    auto programAction = createAction(PROGRAM, todos, "javascript");
     
+    auto eatAction = createAction<TODOS>(EAT, "cheese");
+    auto sleepAction = createAction<TODOS>(SLEEP, "4 hours");
+    auto programAction = createAction<TODOS>(PROGRAM, "javascript");
+
     // on Monday, you may have a routine like this and does it in sequence
-    // result => ["eat cheese", "sleep 4 hours", "program javascript"]
+    // result => ["eat cheese", "program javascript", "sleep 4 hours"]
     auto MONDAY = compose(eatAction, programAction, sleepAction)(todos);
 
     (*todos).clear();
@@ -253,7 +253,7 @@ Here's a contrived example
     (*todos).clear();
     // on Wednesday, maybe you wanna do some C++ and SASS, but you still have to eat and sleep
     // result => ["program SASS", "program C++", "eat cheese", "sleep 4 hours"]
-    auto programAction2 = createAction(PROGRAM2, todos, "C++", "SASS");
+    auto programAction2 = createAction<TODOS>(PROGRAM2, "C++", "SASS");
     auto WEDNESDAY = compose(programAction2, eatAction, sleepAction)(todos);
   }
 ```
