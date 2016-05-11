@@ -1,9 +1,9 @@
 <a name=""></a>
 # durian
 
-The fourth of many fruits.  Stinky. :stuck_out_tongue_closed_eyes:
+The Stinky Fruit. :stuck_out_tongue_closed_eyes:
 
-A C++11 very opinionated helper library for writing and working with _Harmony_. 
+A very opinionated C++11 helper library for writing reactive/functional applications. 
 
 If you compile in linux or Mac, use [Facebook folly](https://github.com/facebook/folly) instead.
 

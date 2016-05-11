@@ -175,7 +175,7 @@ namespace durian {
     ~client<socketType>(){}
     client() = default;
 
-    std::function<string(boost::future<std::string>)> loginResponse(shared_ptr<Plustache::Context> ctx) {
+    virtual std::function<string(boost::future<std::string>)> loginResponse(shared_ptr<Plustache::Context> ctx) {
       return [&](boost::future<std::string> f) ->string{
         auto res = f.get();
         auto tok = getToken(res);
@@ -187,7 +187,7 @@ namespace durian {
     }
 
     // Logout
-    std::function<string(boost::future<std::string>)> logout(shared_ptr<Plustache::Context> ctx, const string bodyTpl, const string rootTpl) {
+    virtual std::function<string(boost::future<std::string>)> logout(shared_ptr<Plustache::Context> ctx, const string bodyTpl, const string rootTpl) {
       //auto logout = [&](boost::future<std::string> f){
       return [&,bodyTpl,rootTpl](boost::future<std::string> f)->string{
       // the session token is in the ctx, it will be sent to the server to end session
@@ -199,7 +199,7 @@ namespace durian {
     }
 
     // Logout response
-    std::function<string(boost::future<std::string>)> logoutResponse() {
+    virtual std::function<string(boost::future<std::string>)> logoutResponse() {
       return [&](boost::future<std::string> f)->string{
         //auto logoutResponse = [&](boost::future<std::string> f){
         auto resp = f.get();
