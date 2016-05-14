@@ -21,6 +21,7 @@
 #include "libntlm-1.4.hxx"
 #include "base64.hxx"
 #include "socket.h"
+#include "jsonxx.hxx"
 #include <type_traits>
 
 using namespace std;
