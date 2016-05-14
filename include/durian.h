@@ -172,6 +172,11 @@ namespace durian {
 
       //store the template type in the context
       (*ctx).add("socketType", (std::is_same<socketType, SimpleWeb::HTTP>::value ? "HTTP" : "HTTPS"));
+
+      //initialize whitelist
+      // getting 'operator -' is ambiguous, so have to do it this way
+      unordered_map<string, int> um = { { "user", 1 }, { "password", 1 }, { "host", 1 }, { "servicePath", 1 }, { "customHeaders", 1 }, { "socketType", 1 } };
+      whitelist = um;
     }
     ~client<socketType>(){}
     client() = default;
@@ -235,7 +240,7 @@ namespace durian {
     PlustacheTypes::ObjectType user, password, token, response;
     std::map<string, string> customHeaders;
     string host, servicePath, userstr, passwordstr;
-    std::unordered_map<string, int> whitelist = { { "user", 1 }, { "password", 1 }, { "host", 1 }, { "servicePath", 1 }, { "customHeaders", 1 }, { "socketType", 1 } };
+    std::unordered_map<string, int> whitelist;
 
     static string getToken(string res) {
       auto raw = xml2json(res.c_str());
