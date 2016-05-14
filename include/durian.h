@@ -220,7 +220,11 @@ namespace durian {
     }
 
     void clearContext() {
-      std::unordered_map<string, int> whitelist = { {"user", 1}, {"password", 1}, {"host", 1}, {"servicePath", 1}, {"customHeaders",1}, {"socketType", 1} };
+      this->ctx->clear(whitelist);
+    }
+
+    void clearContext(std::unordered_map<string, int>& additionalitems) {
+      whitelist.insert(additionalitems.begin(), additionalitems.end());
       this->ctx->clear(whitelist);
     }
         
@@ -231,6 +235,7 @@ namespace durian {
     PlustacheTypes::ObjectType user, password, token, response;
     std::map<string, string> customHeaders;
     string host, servicePath, userstr, passwordstr;
+    std::unordered_map<string, int> whitelist = { { "user", 1 }, { "password", 1 }, { "host", 1 }, { "servicePath", 1 }, { "customHeaders", 1 }, { "socketType", 1 } };
 
     static string getToken(string res) {
       auto raw = xml2json(res.c_str());
