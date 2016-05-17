@@ -253,7 +253,12 @@ namespace durian {
     }
 
     static string getResponse(string res) {
-      auto raw = xml2json(res.c_str());
+      string raw = res;
+      try {
+        raw = xml2json(res.c_str());
+      } catch (e) {
+        // no op  
+      }
       return raw;
     }
   };
