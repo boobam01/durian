@@ -256,7 +256,7 @@ namespace durian {
       string raw = res;
       try {
         raw = xml2json(res.c_str());
-      } catch (e) {
+      } catch (...) {
         // no op  
       }
       return raw;
