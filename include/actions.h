@@ -6,8 +6,8 @@
 #include <iostream>
 namespace {  
   template <typename CTX, typename FUNC, typename... PARAMS>
-  function<const CTX&(const CTX&)> createAction(const FUNC f_, const PARAMS... p) {
-    return[&, p...](const CTX &x)->CTX& {
+  function<CTX(CTX)> createAction(FUNC f_, PARAMS... p) {
+    return[=](CTX x)->CTX {
       return f_(x, p...);
     };
   }
