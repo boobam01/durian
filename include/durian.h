@@ -180,6 +180,18 @@ namespace durian {
     }
     ~client<socketType>(){}
     client() = default;
+    
+    // TODO: Move constructor
+    /*
+    client(client&& other) {};
+
+    client& MemoryPage::operator=(client&& other) {
+      if (this != &other) {
+        // ...
+      }
+      return *this;
+    }
+    */
 
     virtual std::function<string(boost::future<std::string>)> loginResponse(shared_ptr<Plustache::Context> ctx) {
       return [&](boost::future<std::string> f) ->string{
@@ -261,6 +273,12 @@ namespace durian {
       }
       return raw;
     }
+
+    private:
+      // TODO: Implement move constructor
+      // Disable copying
+      // client(const client&);
+      // client& operator=(const client&);
   };
 
   /*

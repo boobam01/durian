@@ -91,6 +91,15 @@ namespace
 		
 		// return 0;
 	// }
+
+  //  with perfect forwarding
+  // http://www.codesynthesis.com/~boris/blog/2012/08/14/using-cxx11-auto-decltype/
+  // template <typename F1, typename F2, typename F3>
+  // void compose(F1 f1, F2 f2, F3 f3) {
+  //  auto&& r = f1();
+  //  f2();
+  //  f3(std::forward<decltype (f1())>(r));
+  // }  
 }
 
 #endif

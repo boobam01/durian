@@ -48,6 +48,8 @@ namespace Plustache {
         }
         for (auto& k : toDelete) { ctx.erase(k); }
       }
+      string first(const std::string key) { return ctx[key].front()[key]; }
+      string last(const std::string key) { return ctx[key].back()[key]; }
 
 	private:
 	    /* data */
