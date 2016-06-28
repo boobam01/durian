@@ -26,18 +26,43 @@ typedef std::vector<ObjectType> CollectionType;
 #define PLUSTACHE_CONTEXT_H
 
 #include <iostream>
-
+#include <mutex>
 
 namespace Plustache {
-	class Context {
+  std::mutex mtx;
+	class Context {    
 	public:
 	    Context ();
 	    ~Context ();
+      
 	    int add(const std::string& key, const std::string& value);
+      int addSafe(const std::string& key, const std::string& value) {
+        std::lock_guard<std::mutex> lock(mtx);
+
+        PlustacheTypes::ObjectType obj;
+        obj[key] = value;
+        ctx[key].push_back(obj);
+        return 0;
+      }
 	    int add(const std::string& key, PlustacheTypes::CollectionType& c);
 	    int add(const std::string& key, const PlustacheTypes::ObjectType& o);
 	    int add(const PlustacheTypes::ObjectType& o);
 	    PlustacheTypes::CollectionType get(const std::string& key) const;
+      PlustacheTypes::CollectionType getSafe(const std::string& key) const {
+        std::lock_guard<std::mutex> lock(mtx);
+
+        PlustacheTypes::CollectionType ret;
+        std::map<std::string, PlustacheTypes::CollectionType> ::const_iterator it;
+        it = ctx.find(key);
+        if (it == ctx.end()) {
+          PlustacheTypes::ObjectType o;
+          o[key] = "";
+          ret.push_back(o);
+        } else {
+          ret = it->second;
+        }
+        return ret;
+      }
       int remove(const std::string& key) { ctx.erase(key); return 0; }
       void clear(std::unordered_map<string, int>& whitelist) { 
         vector<string> toDelete;
@@ -53,7 +78,7 @@ namespace Plustache {
 
 	private:
 	    /* data */
-	    std::map<std::string, PlustacheTypes::CollectionType> ctx;
+	    std::map<std::string, PlustacheTypes::CollectionType> ctx;      
 	};
 } // namespace Plustache
 #endif
@@ -119,7 +144,6 @@ namespace Plustache {
 
 
 using namespace Plustache;
-
 Context::Context()
 {
 
