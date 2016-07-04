@@ -22,7 +22,7 @@
 #include "base64.hxx"
 #include "socket.h"
 // #include "jsonxx.hxx"
-#include "hashtable.hxx"
+#include "uthash.h"
 #include <type_traits>
 
 using namespace std;
