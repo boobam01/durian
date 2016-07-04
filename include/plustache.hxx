@@ -26,10 +26,12 @@ typedef std::vector<ObjectType> CollectionType;
 #define PLUSTACHE_CONTEXT_H
 
 #include <iostream>
-#include <mutex>
+// #include <mutex>
+#include "spinLock.h"
 
 namespace Plustache {
-  std::mutex mtx;
+  // std::mutex mtx;
+  durian::Spinlock lock;
 	class Context {    
 	public:
 	    Context ();
@@ -37,11 +39,12 @@ namespace Plustache {
       
 	    int add(const std::string& key, const std::string& value);
       int addSafe(const std::string& key, const std::string& value) {
-        std::lock_guard<std::mutex> lock(mtx);
-
+        //std::lock_guard<std::mutex> lock(mtx);
+        lock.lock();
         PlustacheTypes::ObjectType obj;
         obj[key] = value;
         ctx[key].push_back(obj);
+        lock.unlock();
         return 0;
       }
 	    int add(const std::string& key, PlustacheTypes::CollectionType& c);
@@ -49,8 +52,8 @@ namespace Plustache {
 	    int add(const PlustacheTypes::ObjectType& o);
 	    PlustacheTypes::CollectionType get(const std::string& key) const;
       PlustacheTypes::CollectionType getSafe(const std::string& key) const {
-        std::lock_guard<std::mutex> lock(mtx);
-
+        //std::lock_guard<std::mutex> lock(mtx);
+        lock.lock();
         PlustacheTypes::CollectionType ret;
         std::map<std::string, PlustacheTypes::CollectionType> ::const_iterator it;
         it = ctx.find(key);
@@ -61,6 +64,7 @@ namespace Plustache {
         } else {
           ret = it->second;
         }
+        lock.unlock();
         return ret;
       }
       int remove(const std::string& key) { ctx.erase(key); return 0; }

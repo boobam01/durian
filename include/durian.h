@@ -22,7 +22,8 @@
 #include "base64.hxx"
 #include "socket.h"
 // #include "jsonxx.hxx"
-#include "uthash.h"
+#include "hashTable.h"
+#include "spinLock.h"
 #include <type_traits>
 
 using namespace std;
