@@ -157,10 +157,19 @@ namespace durian {
       const char* _servicePath,
       const char* _user,
       const char* _password,
-      std::map<string, string>& _customHeaders) : host(_host), servicePath(_servicePath), userstr(_user), passwordstr(_password), customHeaders(_customHeaders) {
+      std::map<string, string>& _customHeaders,
+      unsigned int s_timeout = 30000,
+      unsigned int r_timeout = 30000
+      ) : 
+        host(_host), servicePath(_servicePath), 
+        userstr(_user), 
+        passwordstr(_password), 
+        customHeaders(_customHeaders),
+        send_timeout(s_timeout),
+        recv_timeout(r_timeout) {
 
       // create api::client<socketType>
-      apiClient = make_unique<api::client<socketType>>(host);
+      apiClient = make_unique<api::client<socketType>>(host, s_timeout, r_timeout);
 
       // create the context that will be shared by all templates
       ctx = make_shared<Plustache::Context>();
@@ -277,6 +286,9 @@ namespace durian {
     }
 
     private:
+      unsigned int send_timeout;
+      unsigned int recv_timeout;
+
       // TODO: Implement move constructor
       // Disable copying
       // client(const client&);

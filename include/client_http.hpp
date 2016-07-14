@@ -232,6 +232,29 @@ namespace SimpleWeb {
     }
   };
 
+  /* Timeout Helper Class */
+  class timeout_op
+  {
+  public:
+    timeout_op(unsigned int timeout, int _name) : timeout_value(timeout), op_name(_name) {}
+
+    template<class Protocol>
+    int level(const Protocol& p) const { return SOL_SOCKET; }
+
+    template<class Protocol>
+    int name(const Protocol& p) const { return op_name; }
+
+    template<class Protocol>
+    const void* data(const Protocol& p) const { return &timeout_value; }
+
+    template<class Protocol>
+    size_t size(const Protocol& p) const { return sizeof(timeout_value); }
+
+  private:
+    unsigned int timeout_value;
+    int op_name; // SO_SNDTIMEO or SO_RCVTIMEO
+  };
+
   template<class socket_type>
   class Client : public ClientBase<socket_type> {};
 
@@ -240,7 +263,17 @@ namespace SimpleWeb {
   template<>
   class Client<HTTP> : public ClientBase<HTTP>{
   public:
+    /*
     Client(const std::string& server_port_path) : ClientBase<HTTP>::ClientBase(server_port_path, 80) {
+      socket = std::make_shared<HTTP>(asio_io_service);
+    }
+    */
+
+    // Optional Timeout Constructor
+    Client(const std::string& server_port_path, unsigned int s_timeout = 30000, unsigned int r_timeout = 30000)
+      : ClientBase<HTTP>::ClientBase(server_port_path, 80),
+      send_timeout(s_timeout),
+      recv_timeout(r_timeout) {
       socket = std::make_shared<HTTP>(asio_io_service);
     }
 
@@ -253,9 +286,23 @@ namespace SimpleWeb {
         boost::asio::ip::tcp::no_delay option(true);
         socket->set_option(option);
 
+        /* Timeout implementation */
+        if (send_timeout > 0) {
+          timeout_op send_op(send_timeout, SO_SNDTIMEO);
+          socket->set_option(send_op);
+        }
+
+        if (recv_timeout > 0) {
+          timeout_op recv_op(recv_timeout, SO_RCVTIMEO);
+          socket->set_option(recv_op);
+        }
+
         socket_error = false;
       }
     }
+
+    unsigned int send_timeout;
+    unsigned int recv_timeout;
   };
 }
 

@@ -51,7 +51,7 @@ namespace api {
   template<typename T>
   class client {
   public:
-    client(string _host) : host(_host) {
+    client(string _host, unsigned int s_timeout = 30000, unsigned int r_timeout = 30000) : host(_host), send_timeout(s_timeout), recv_timeout(r_timeout) {
 
       // for each http/s verb, create a method factory that returns a future
       std::for_each(methods.begin(), methods.end(), [this](const string verb)->void{
@@ -61,24 +61,28 @@ namespace api {
           /*
             implementation of generic REST client
           */
-          auto apiCall = [](const string host, const string verb, string& params, string& data, std::map<string, string>& header)->string {
-            SimpleWeb::Client<T> client(host);
-            shared_ptr<SimpleWeb::ClientBase<T>::Response> r1;
+          auto apiCall = [this](const string host, const string verb, string& params, string& data, std::map<string, string>& header)->string {
+            try {
+              SimpleWeb::Client<T> client(host, send_timeout, recv_timeout);
+              shared_ptr<SimpleWeb::ClientBase<T>::Response> r1;
 
-            if (data.size() > 0){
-              stringstream ss;
-              ss << data;
-              r1 = client.request(verb, params, ss, header);
+              if (data.size() > 0){
+                stringstream ss;
+                ss << data;
+                r1 = client.request(verb, params, ss, header);
+              } else {
+                r1 = client.request(verb, params, "", header);
+              }
+
+              ostringstream oss;
+              oss << r1->content.rdbuf();
+              return oss.str();
+            } catch (const std::exception& e) {
+              return e.what();
             }
-            else {
-              r1 = client.request(verb, params, "", header);
-            }
-            ostringstream oss;
-            oss << r1->content.rdbuf();
-            return oss.str();
           };
 
-          return boost::async([&]()->string{
+          return boost::async([&, this]()->string{
             return apiCall(host, verb, params, data, header);
           });
 
@@ -95,7 +99,8 @@ namespace api {
     
   private:
     string host;
-        
+    unsigned int send_timeout;
+    unsigned int recv_timeout;
   };
 
   template<typename T>
