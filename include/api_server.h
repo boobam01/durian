@@ -16,7 +16,7 @@ namespace api {
   struct Route {
     string expression;
     string verb;
-    std::function<void(typename SimpleWeb::ServerBase<T>::Response&, shared_ptr<typename SimpleWeb::ServerBase<T>::Request>)> action;
+    std::function<void(shared_ptr<typename SimpleWeb::ServerBase<T>::Response>, shared_ptr<typename SimpleWeb::ServerBase<T>::Request>)> action;
   };
 
   template<typename T>
@@ -38,8 +38,8 @@ namespace api {
         _server->resource[r.expression][r.verb] = r.action;
       });
       //default
-      _server->default_resource["GET"] = [](SimpleWeb::ServerBase<T>::Response& response, shared_ptr<SimpleWeb::ServerBase<T>::Request> request) {
-        response << "HTTP/1.1 200 OK\r\nContent-Length: " << 0 << "\r\n\r\n";
+      _server->default_resource["GET"] = [](shared_ptr<SimpleWeb::ServerBase<T>::Response> response, shared_ptr<SimpleWeb::ServerBase<T>::Request> request) {
+        *response << "HTTP/1.1 200 OK\r\nContent-Length: " << 0 << "\r\n\r\n";
       };
     }
     void start() {
