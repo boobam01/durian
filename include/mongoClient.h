@@ -6,6 +6,10 @@
 #include <iostream>
 #include <mongo/client/dbclient.h>
 #include "spdlog/spdlog.h"
+#include <boost/uuid/uuid.hpp>            // uuid class
+#include <boost/uuid/uuid_generators.hpp> // generators
+#include <boost/uuid/uuid_io.hpp>         // streaming operators etc.
+#include <boost/lexical_cast.hpp>
 
 using namespace std;
 
@@ -16,7 +20,7 @@ namespace mongoclient {
     mongo::DBClientConnection conn;
   public:
     client(const string mHost, const string mPort, const string mDatabase) : host(mHost), port(mPort), database(mDatabase) {}
-    ~client(){}
+    ~client(){ mongo::BSONObj o; conn.logout(host, o); }
     int connect() {
       std::string uri = host + ":" + port;
       try {
@@ -64,6 +68,14 @@ namespace mongoclient {
           auto v = o["_id"];
           auto nb = v.wrap();
           bulk.find(nb).upsert().replaceOne(o);
+        } else {
+          // mongo driver failing at 
+          // BSONObj InsertWriteOperation::_ensureId(const BSONObj& doc) ?
+          // This doesn't work either, what a crappy driver 
+          // auto p = mongo::BSONObjBuilder().genOID().appendElements(o).obj();
+          boost::uuids::uuid uuid = boost::uuids::random_generator()();
+          auto p = mongo::BSONObjBuilder().append("_id", boost::lexical_cast<std::string>(uuid)).appendElements(o).obj();
+          bulk.insert(p);
         }
       }
       mongo::WriteConcern wc;
