@@ -61,7 +61,7 @@ namespace api {
           /*
             implementation of generic REST client
           */
-          auto apiCall = [this](const string host, const string verb, string& params, string& data, std::map<string, string>& header)->string {
+          auto apiCall = [this](const string host, const string verb, string& params, string& data, std::map<string, string>& header, unsigned int send_timeout, unsigned int recv_timeout)->string {
             try {
               SimpleWeb::Client<T> client(host, send_timeout, recv_timeout);
               shared_ptr<SimpleWeb::ClientBase<T>::Response> r1;
@@ -83,7 +83,7 @@ namespace api {
           };
 
           return boost::async([&, this]()->string{
-            return apiCall(host, verb, params, data, header);
+            return apiCall(host, verb, params, data, header, send_timeout, recv_timeout);
           });
 
         };
